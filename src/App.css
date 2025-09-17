@@ -40,3 +40,37 @@
 .read-the-docs {
   color: #888;
 }
+
+.App {
+  font-family: sans-serif;
+}
+
+.board {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+}
+
+.list-container {
+  width: 250px;
+}
+
+.list {
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 6px;
+  min-height: 200px;
+}
+
+.card-list {
+  min-height: 50px;
+}
+
+.card {
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  user-select: none;
+}

@@ -1,35 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import Board from "./components/Board";
+import "./App.css";
+import type { DataType } from "./types";
+
+const initialData: DataType = {
+  lists: {
+    "list-1": { id: "list-1", title: "To Do", cardIds: ["card-1", "card-2"] },
+    "list-2": { id: "list-2", title: "In Progress", cardIds: ["card-3"] },
+    "list-3": { id: "list-3", title: "Done", cardIds: [] },
+  },
+  cards: {
+    "card-1": { id: "card-1", content: "Task 1" },
+    "card-2": { id: "card-2", content: "Task 2" },
+    "card-3": { id: "card-3", content: "Task 3" },
+  },
+  listOrder: ["list-1", "list-2", "list-3"],
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [data, setData] = useState<DataType>(initialData);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <Board data={data} setData={setData} />
+    </div>
+  );
 }
 
-export default App
+export default App;
