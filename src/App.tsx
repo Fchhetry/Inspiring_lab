@@ -34,16 +34,35 @@
 
 // export default App
 
+// import { MantineProvider, Center } from "@mantine/core";
+// import TodoList from "./features/list/TodoList";
+
+// function App() {
+//   return (
+//     <MantineProvider>
+//       <Center style={{ width: "100vw", height: "100vh" }}>
+//         <TodoList />
+//       </Center>
+//     </MantineProvider>
+//   );
+// }
+
+// export default App;
+
 import { MantineProvider, Center } from "@mantine/core";
-import TodoList from "./list/TodoList";
+import { Provider } from "react-redux";
+import { store } from "./features/store/stores"; // adjust the path to your store
+import TodoList from "./features/list/TodoList";
 
 function App() {
   return (
-    <MantineProvider>
-      <Center style={{ width: "100vw", height: "100vh" }}>
-        <TodoList />
-      </Center>
-    </MantineProvider>
+    <Provider store={store}>
+      <MantineProvider >
+        <Center style={{ width: "100vw", height: "100vh" }}>
+          <TodoList />
+        </Center>
+      </MantineProvider>
+    </Provider>
   );
 }
 
