@@ -7,11 +7,11 @@ import type {
 } from "@hello-pangea/dnd";
 
 import List from "./List";
-import type { DataType } from "../types";
+import type { DataType } from "../../types";
 
 interface BoardProps {
   data: DataType;
-  setData: React.Dispatch<React.SetStateAction<DataType>>;
+  setData: (newData: DataType) => void;
 }
 
 const Board: React.FC<BoardProps> = ({ data, setData }) => {

@@ -1,8 +1,11 @@
 import React from "react";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DroppableProvided, DraggableProvided } from "@hello-pangea/dnd";
-import type { CardType, ListType } from "../types";
+import type { CardType, ListType } from "../../types";
 import Card from "./Card";
+import { useDispatch } from "react-redux";
+import { addCard } from "../../store";
+import "../../App.css";
 
 interface ListProps {
   list: ListType;
@@ -11,27 +14,30 @@ interface ListProps {
 }
 
 const List: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
+  const dispatch = useDispatch();
+
+  const handleAddCard = () => {
+    const newId = `card-${Date.now()}`;
+    dispatch(
+      addCard({
+        listId: list.id,
+        card: { id: newId, content: "New card" },
+      })
+    );
+  };
+
   return (
     <div className="list">
-      <h3 {...(dragHandleProps ?? {})} style={{ cursor: "grab", margin: 0 }}>
-        {list.title}
-      </h3>
+      <h3 {...(dragHandleProps ?? {})}>{list.title}</h3>
 
       <Droppable droppableId={list.id} type="card" isCombineEnabled={true}>
         {(provided: DroppableProvided, snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className="card-list"
-            style={{
-              minHeight: 80,
-              paddingTop: 8,
-              paddingBottom: 8,
-              background: snapshot.isDraggingOver
-                ? "rgba(0,0,0,0.03)"
-                : "transparent",
-              transition: "background 120ms linear",
-            }}
+            className={`card-list ${
+              snapshot.isDraggingOver ? "dragging-over" : ""
+            }`}
           >
             {list.cardIds.map((cardId, index) => (
               <Draggable draggableId={cardId} index={index} key={cardId}>
@@ -45,8 +51,11 @@ const List: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
                 )}
               </Draggable>
             ))}
-
             {provided.placeholder}
+
+            <button className="add-card-btn" onClick={handleAddCard}>
+              + Add a card
+            </button>
           </div>
         )}
       </Droppable>
