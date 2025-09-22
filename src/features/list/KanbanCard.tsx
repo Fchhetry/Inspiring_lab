@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import type { DraggableProvided } from "@hello-pangea/dnd";
-import type { CardType } from "../../types";
+import type { CardType } from "../../Constants/types";
 import { useDispatch } from "react-redux";
-import { editCard } from "../../store";
+import { editCard } from "../../Constants/Store";
 import { IconEdit } from "@tabler/icons-react";
 import "../../App.css";
 
@@ -46,6 +46,8 @@ const Card: React.FC<CardProps> = ({
           onChange={(e) => setValue(e.target.value)}
           onBlur={handleBlur}
           className="card-textarea"
+          title="Edit card content"
+          placeholder="Enter card content"
         />
       ) : (
         <div className="card-content">

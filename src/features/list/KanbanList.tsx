@@ -1,10 +1,10 @@
 import React from "react";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DroppableProvided, DraggableProvided } from "@hello-pangea/dnd";
-import type { CardType, ListType } from "../../types";
-import Card from "./Card";
+import type { CardType, ListType } from "../../Constants/types";
+import Card from "./KanbanCard";
 import { useDispatch } from "react-redux";
-import { addCard } from "../../store";
+import { addCard } from "../../Constants/Store";
 import "../../App.css";
 
 interface ListProps {
