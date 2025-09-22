@@ -2,11 +2,11 @@ import React from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../store/stores";
-import { setTodos, toggleTodo, updateTodoText } from "../slice/todosSlice";
+import { setTodos, updateTodoText } from "../slice/todosSlice";
 import type { Todo } from "../slice/todosSlice";
 
-import { Paper, TextInput, Stack, Title, Group } from "@mantine/core";
-import { IconSquare, IconSquareCheck } from "@tabler/icons-react";
+import { Paper, Stack, Title, Group, TextInput } from "@mantine/core";
+import { IconGripVertical } from "@tabler/icons-react";
 
 const TodoList: React.FC = () => {
   const todos = useSelector((state: RootState) => state.todos);
@@ -56,25 +56,11 @@ const TodoList: React.FC = () => {
                         marginBottom: "6px",
                         display: "flex",
                         alignItems: "center",
+                        cursor: "grab",
                         ...provided.draggableProps.style,
                       }}
                     >
-                      {todo.done ? (
-                        <IconSquareCheck
-                          size={24}
-                          stroke={2}
-                          color="green"
-                          onClick={() => dispatch(toggleTodo(todo.id))}
-                          style={{ cursor: "pointer" }}
-                        />
-                      ) : (
-                        <IconSquare
-                          size={24}
-                          stroke={2}
-                          onClick={() => dispatch(toggleTodo(todo.id))}
-                          style={{ cursor: "pointer" }}
-                        />
-                      )}
+                      <IconGripVertical size={24} stroke={2} />
 
                       <TextInput
                         value={todo.text}
@@ -87,8 +73,22 @@ const TodoList: React.FC = () => {
                           )
                         }
                         variant="unstyled"
-                        styles={{ input: { border: "none", padding: 0 } }}
-                        style={{ flex: 1, width: "100%" }}
+                        styles={{
+                          input: {
+                            border: "none",
+                            outline: "none",
+                            boxShadow: "none",
+                            background: "transparent",
+                            padding: 0,
+                            margin: 0,
+                            fontSize: "16px",
+                          },
+                        }}
+                        style={{
+                          flex: 1,
+                          width: "100%",
+                          textDecoration: todo.done ? "line-through" : "none",
+                        }}
                       />
                     </Group>
                   )}
