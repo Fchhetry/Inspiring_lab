@@ -9,8 +9,8 @@ import {
   type Todo,
 } from "../../../store/slice/todosSlice";
 
-import { Paper, Stack, Title, Group, TextInput } from "@mantine/core";
-import { IconGripVertical } from "@tabler/icons-react";
+import { Paper, Stack, Title } from "@mantine/core";
+import TodoItem from "../components/TodoItem";
 
 const TodoList: React.FC = () => {
   const todos = useSelector((state: RootState) => state.todos);
@@ -47,54 +47,19 @@ const TodoList: React.FC = () => {
               {todos.map((todo: Todo, index: number) => (
                 <Draggable key={todo.id} draggableId={todo.id} index={index}>
                   {(provided, snapshot) => (
-                    <Group
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      gap="sm"
-                      style={{
-                        border: "1px solid #ccc",
-                        padding: "10px",
-                        background: snapshot.isDragging ? "#d1fae5" : "#fff",
-                        borderRadius: "6px",
-                        marginBottom: "6px",
-                        display: "flex",
-                        alignItems: "center",
-                        cursor: "grab",
-                        ...provided.draggableProps.style,
-                      }}
-                    >
-                      <IconGripVertical size={24} stroke={2} />
-
-                      <TextInput
-                        value={todo.text}
-                        onChange={(e) =>
-                          dispatch(
-                            updateTodoText({
-                              id: todo.id,
-                              text: e.currentTarget.value,
-                            })
-                          )
-                        }
-                        variant="unstyled"
-                        styles={{
-                          input: {
-                            border: "none",
-                            outline: "none",
-                            boxShadow: "none",
-                            background: "transparent",
-                            padding: 0,
-                            margin: 0,
-                            fontSize: "16px",
-                          },
-                        }}
-                        style={{
-                          flex: 1,
-                          width: "100%",
-                          textDecoration: todo.done ? "line-through" : "none",
-                        }}
-                      />
-                    </Group>
+                    <TodoItem
+                      todo={todo}
+                      provided={provided}
+                      snapshot={snapshot}
+                      onTextChange={(text) =>
+                        dispatch(
+                          updateTodoText({
+                            id: todo.id,
+                            text,
+                          })
+                        )
+                      }
+                    />
                   )}
                 </Draggable>
               ))}
