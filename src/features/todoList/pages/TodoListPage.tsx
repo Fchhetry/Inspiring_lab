@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../../store/Store";
 import { setData, editCard, type Todo } from "../../../store/slice/todosSlice";
 
-import { Paper, Stack, Title, Group, TextInput } from "@mantine/core";
-import { IconGripVertical } from "@tabler/icons-react";
+import { Paper, Stack, Title } from "@mantine/core";
+import TodoItem from "../../components/TodoItem";
 
 const TodoList: React.FC = () => {
   const kanban = useSelector((state: RootState) => state.kanban);
