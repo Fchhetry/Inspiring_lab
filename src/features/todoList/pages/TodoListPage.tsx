@@ -10,7 +10,7 @@ import {
 } from "../../../store/slice/todosSlice";
 
 import { Paper, Stack, Title } from "@mantine/core";
-import TodoItem from "../components/TodoItem";
+import TodoItem from "../../components/TodoItem";
 
 const TodoList: React.FC = () => {
   const todos = useSelector((state: RootState) => state.todos);
