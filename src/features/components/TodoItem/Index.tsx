@@ -3,6 +3,7 @@ import { Group, TextInput } from "@mantine/core";
 import { IconGripVertical } from "@tabler/icons-react";
 import type { TodoItemProps, EditableTextProps } from "../../../types";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DragHandle: React.FC<{ dragHandleProps: any }> = ({
   dragHandleProps,
 }) => (

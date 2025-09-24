@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "../../../../store/Store";
-import { setTodos, updateTodoText } from "../../../../store/slice/todosSlice";
-import type { Todo } from "../../../../store/slice/todosSlice";
+import type { RootState } from "../../../store/Store";
+import {
+  setTodos,
+  updateTodoText,
+  type Todo,
+} from "../../../store/slice/todosSlice";
 
 import { Paper, Stack, Title, Group, TextInput } from "@mantine/core";
 import { IconGripVertical } from "@tabler/icons-react";
