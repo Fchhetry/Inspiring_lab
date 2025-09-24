@@ -1,7 +1,7 @@
 import { MantineProvider, Center } from "@mantine/core";
 import { Provider } from "react-redux";
-import store from "./Constants/Store";
-import TodoList from "./features/list/TodoList";
+import store from "./store/Store";
+import TodoList from "./features/pages/todoList/pages/TodoListPage";
 
 function App() {
   return (

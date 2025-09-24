@@ -1,8 +1,8 @@
-import todosReducer from "./todosSlice";
+import todosReducer from "./slice/todosSlice";
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { DataType, CardType } from "./types";
+import type { DataType, CardType } from "../types";
 
 
 

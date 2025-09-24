@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import type { DraggableProvided } from "@hello-pangea/dnd";
-import type { CardType } from "../../Constants/types";
+import type { CardType } from "../../../types";
 import { useDispatch } from "react-redux";
-import { editCard } from "../../Constants/Store";
+import { editCard } from "../../../store/Store";
 import { IconEdit } from "@tabler/icons-react";
 import "../../App.css";
 

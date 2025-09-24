@@ -6,8 +6,8 @@ import type {
   DraggableProvided,
 } from "@hello-pangea/dnd";
 
-import List from "../list/KanbanList";
-import type { DataType } from "../../Constants/types";
+import List from "./pages/KanbanList/pages/KanbanListPage";
+import type { DataType } from "../types";
 
 interface BoardProps {
   data: DataType;
