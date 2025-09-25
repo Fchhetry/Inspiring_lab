@@ -2,9 +2,7 @@ import todosReducer from "./slice/todosSlice";
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { DataType, CardType } from "../types";
-
-
+import type { CardType, DataType } from "../features/KanbanBoard/types";
 
 //Load from localStorage
 const loadState = (): DataType | undefined => {
@@ -66,11 +64,10 @@ export const { setData, addCard, editCard } = kanbanSlice.actions;
 const store = configureStore({
   reducer: {
     kanban: kanbanSlice.reducer,
-  
+
     todos: todosReducer,
   },
-  },
-);
+});
 
 store.subscribe(() => {
   saveState(store.getState().kanban);

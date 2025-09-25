@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import type { DraggableProvided } from "@hello-pangea/dnd";
-import type { CardType } from "../../../types";
+import type { CardType } from "../types";
 import { useDispatch } from "react-redux";
 import { editCard } from "../../../store/Store";
 import { IconEdit } from "@tabler/icons-react";
-import "../../App.css";
+import { Card, Textarea, Text, ActionIcon, Group } from "@mantine/core";
 
 interface CardProps {
   card: CardType;
@@ -13,7 +13,7 @@ interface CardProps {
   isDragging?: boolean;
 }
 
-const Card: React.FC<CardProps> = ({
+const KanbanCard: React.FC<CardProps> = ({
   card,
   provided,
   isCombining,
@@ -31,36 +31,41 @@ const Card: React.FC<CardProps> = ({
   };
 
   return (
-    <div
+    <Card
+      shadow="sm"
+      padding="sm"
+      radius="md"
+      withBorder
       ref={provided.innerRef}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
-      className={`card ${isDragging ? "dragging" : ""} ${
-        isCombining ? "combining" : ""
-      }`}
+      style={{
+        marginBottom: "8px",
+        background: isDragging ? "#e3f2fd" : "white",
+        border: "1px solid #e2e8f0",
+        opacity: isCombining ? 0.7 : 1,
+        transition: "background 0.2s ease, box-shadow 0.2s ease",
+      }}
     >
       {isEditing ? (
-        <textarea
-          autoFocus
+        <Textarea
+          autosize
+          minRows={2}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => setValue(e.currentTarget.value)}
           onBlur={handleBlur}
-          className="card-textarea"
-          title="Edit card content"
-          placeholder="Enter card content"
+          placeholder="Edit card content"
         />
       ) : (
-        <div className="card-content">
-          <span>{card.content}</span>
-          <IconEdit
-            size={16}
-            className="edit-icon"
-            onClick={() => setIsEditing(true)}
-          />
-        </div>
+        <Group gap="apart" align="center">
+          <Text>{card.content}</Text>
+          <ActionIcon onClick={() => setIsEditing(true)} variant="light">
+            <IconEdit size={16} />
+          </ActionIcon>
+        </Group>
       )}
-    </div>
+    </Card>
   );
 };
 
-export default Card;
+export default KanbanCard;
