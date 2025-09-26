@@ -1,15 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../../../store/Store";
-import { setData, editCard, type Todo } from "../../../store/slice/todosSlice";
+import type { RootState } from "../../../store/Store";
+import { setTodos, updateTodoText } from "../../../store/slice/todosSlice";
+import type { Todo } from "../../../store/slice/todosSlice";
 
-import { Paper, Stack, Title } from "@mantine/core";
-import TodoItem from "../../components/TodoItem";
+import { Paper, Stack, Title, TextInput, Button, Group } from "@mantine/core";
+import TodoItem from "../../components/TodoItem/Index";
 
 const TodoList: React.FC = () => {
-  const kanban = useSelector((state: RootState) => state.kanban);
-  const dispatch = useDispatch<AppDispatch>();
+  const todos = useSelector((state: RootState) => state.todos);
+  const dispatch = useDispatch();
+  const [newTodo, setNewTodo] = useState("");
+
+  const handleAddTodo = () => {
+    if (!newTodo.trim()) return;
+    const newTask: Todo = {
+      id: Date.now().toString(),
+      text: newTodo,
+      done: false,
+    };
+    dispatch(setTodos([...todos, newTask]));
+    setNewTodo("");
+  };
 
   const todos: Todo[] = Object.values(kanban.cards).map((card) => ({
     id: card.id,
@@ -47,6 +60,16 @@ const TodoList: React.FC = () => {
         To-Do List
       </Title>
 
+      <Group mb="md">
+        <TextInput
+          placeholder="Add a new task..."
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.currentTarget.value)}
+          style={{ flex: 1 }}
+        />
+        <Button onClick={handleAddTodo}>Add</Button>
+      </Group>
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="todos">
           {(provided) => (
@@ -58,54 +81,14 @@ const TodoList: React.FC = () => {
               {todos.map((todo: Todo, index: number) => (
                 <Draggable key={todo.id} draggableId={todo.id} index={index}>
                   {(provided, snapshot) => (
-                    <Group
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      gap="sm"
-                      style={{
-                        border: "1px solid #ccc",
-                        padding: "10px",
-                        background: snapshot.isDragging ? "#d1fae5" : "#fff",
-                        borderRadius: "6px",
-                        marginBottom: "6px",
-                        display: "flex",
-                        alignItems: "center",
-                        cursor: "grab",
-                        ...provided.draggableProps.style,
-                      }}
-                    >
-                      <IconGripVertical size={24} stroke={2} />
-
-                      <TextInput
-                        value={todo.text}
-                        onChange={(e) =>
-                          dispatch(
-                            editCard({
-                              cardId: todo.id,
-                              content: e.currentTarget.value,
-                            })
-                          )
-                        }
-                        variant="unstyled"
-                        styles={{
-                          input: {
-                            border: "none",
-                            outline: "none",
-                            boxShadow: "none",
-                            background: "transparent",
-                            padding: 0,
-                            margin: 0,
-                            fontSize: "16px",
-                          },
-                        }}
-                        style={{
-                          flex: 1,
-                          width: "100%",
-                          textDecoration: todo.done ? "line-through" : "none",
-                        }}
-                      />
-                    </Group>
+                    <TodoItem
+                      todo={todo}
+                      provided={provided}
+                      snapshot={snapshot}
+                      onTextChange={(text) =>
+                        dispatch(updateTodoText({ id: todo.id, text }))
+                      }
+                    />
                   )}
                 </Draggable>
               ))}
