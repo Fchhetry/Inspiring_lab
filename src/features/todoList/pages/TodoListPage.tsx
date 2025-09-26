@@ -1,20 +1,28 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../store/Store";
-import {
-  setTodos,
-  updateTodoText,
-  type Todo,
-} from "../../../store/slice/todosSlice";
+import { setTodos, updateTodoText } from "../../../store/slice/todosSlice";
+import type { Todo } from "../../../store/slice/todosSlice";
 
-import { Paper, Stack, Title } from "@mantine/core";
-import TodoItem from "../../components/TodoItem";
+import { Paper, Stack, Title, TextInput, Button, Group } from "@mantine/core";
+import TodoItem from "../../components/TodoItem/Index";
 
 const TodoList: React.FC = () => {
   const todos = useSelector((state: RootState) => state.todos);
   const dispatch = useDispatch();
+  const [newTodo, setNewTodo] = useState("");
+
+  const handleAddTodo = () => {
+    if (!newTodo.trim()) return;
+    const newTask: Todo = {
+      id: Date.now().toString(),
+      text: newTodo,
+      done: false,
+    };
+    dispatch(setTodos([...todos, newTask]));
+    setNewTodo("");
+  };
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -36,6 +44,16 @@ const TodoList: React.FC = () => {
         📝 To-Do List
       </Title>
 
+      <Group mb="md">
+        <TextInput
+          placeholder="Add a new task..."
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.currentTarget.value)}
+          style={{ flex: 1 }}
+        />
+        <Button onClick={handleAddTodo}>Add</Button>
+      </Group>
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="todos">
           {(provided) => (
@@ -52,12 +70,7 @@ const TodoList: React.FC = () => {
                       provided={provided}
                       snapshot={snapshot}
                       onTextChange={(text) =>
-                        dispatch(
-                          updateTodoText({
-                            id: todo.id,
-                            text,
-                          })
-                        )
+                        dispatch(updateTodoText({ id: todo.id, text }))
                       }
                     />
                   )}
