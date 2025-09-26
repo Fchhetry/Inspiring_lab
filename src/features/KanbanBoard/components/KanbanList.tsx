@@ -34,7 +34,7 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
       withBorder
       style={{
         width: 300,
-        backgroundColor: "#f8fafc",
+        backgroundColor: "#bfd9f3ff",
         display: "flex",
         flexDirection: "column",
         maxHeight: "80vh",
