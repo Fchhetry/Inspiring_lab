@@ -1,7 +1,7 @@
 import React from "react";
 import { Group, TextInput } from "@mantine/core";
 import { IconGripVertical } from "@tabler/icons-react";
-import type { TodoItemProps, EditableTextProps } from "../../../types";
+import type { TodoItemProps, EditableTextProps } from "../../../../types";
 
 const DragHandle: React.FC<{ dragHandleProps: any }> = ({
   dragHandleProps,

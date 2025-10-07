@@ -6,7 +6,7 @@ import { setTodos, updateTodoText } from "../../../store/slice/todosSlice";
 import type { Todo } from "../../../store/slice/todosSlice";
 
 import { Paper, Stack, Title, TextInput, Button, Group } from "@mantine/core";
-import TodoItem from "../../components/TodoItem/Index";
+import TodoItem from "../components/TodoItem/Index";
 
 const TodoList: React.FC = () => {
   const todos = useSelector((state: RootState) => state.todos);
