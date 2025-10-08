@@ -58,8 +58,22 @@ const KanbanCard: React.FC<CardProps> = ({
         />
       ) : (
         <Group justify="space-between" align="flex-start" w="100%">
-          <Text>{card.content} </Text>
-          <ActionIcon onClick={() => setIsEditing(true)} variant="light" mt={2}>
+          <Text
+            style={{
+              flex: 1,
+              wordBreak: "break-word",
+              fontSize: 14,
+              color: "#1a1a1a",
+            }}
+          >
+            {card.content}{" "}
+          </Text>
+          <ActionIcon
+            onClick={() => setIsEditing(true)}
+            variant="subtle"
+            mt={2}
+            color="blue"
+          >
             <IconEdit size={16} />
           </ActionIcon>
         </Group>
