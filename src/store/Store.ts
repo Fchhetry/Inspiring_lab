@@ -24,16 +24,14 @@ const saveState = (state: DataType) => {
 
 const initialState: DataType = loadState() || {
   lists: {
-    "list-1": { id: "list-1", title: "To Do", cardIds: ["card-1", "card-2"] },
     "list-2": { id: "list-2", title: "In Progress", cardIds: ["card-3"] },
     "list-3": { id: "list-3", title: "Done", cardIds: [] },
   },
   cards: {
-    "card-1": { id: "card-1", content: "Task 1" },
     "card-2": { id: "card-2", content: "Task 2" },
     "card-3": { id: "card-3", content: "Task 3" },
   },
-  listOrder: ["list-1", "list-2", "list-3"],
+  listOrder: ["list-2", "list-3"],
 };
 
 const kanbanSlice = createSlice({

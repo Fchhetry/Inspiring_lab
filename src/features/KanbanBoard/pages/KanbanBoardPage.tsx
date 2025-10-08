@@ -98,7 +98,8 @@ const KanbanBoard: React.FC = () => {
 
             {data.listOrder.map((listId, index) => {
               const list = data.lists[listId];
-              if (!list) return null;
+              //if (!list) return null;
+              if (list.title === "To Do") return null;
 
               return (
                 <Draggable draggableId={list.id} index={index} key={list.id}>
