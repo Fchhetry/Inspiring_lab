@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type { DraggableProvided } from "@hello-pangea/dnd";
 import type { CardType } from "../types";
 import { useDispatch } from "react-redux";
-import { editCard } from "../../../store/Store";
+import { editCard } from "../../../store/slice/todosSlice";
 import { IconEdit } from "@tabler/icons-react";
 import { Card, Textarea, Text, ActionIcon, Group } from "@mantine/core";
 

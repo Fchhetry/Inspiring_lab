@@ -4,7 +4,7 @@ import type { DroppableProvided, DraggableProvided } from "@hello-pangea/dnd";
 import type { CardType, ListType } from "../types";
 import KanbanCard from "./Kanbancard";
 import { useDispatch } from "react-redux";
-import { addCard } from "../../../store/Store";
+import { addCard } from "../../../store/slice/todosSlice";
 import { Paper, Title, Button, Stack } from "@mantine/core";
 
 interface ListProps {
@@ -65,24 +65,33 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
               overflowY: "auto",
             }}
           >
-            {list.cardIds.map((cardId, index) => (
-              <Draggable draggableId={cardId} index={index} key={cardId}>
-                {(prov: DraggableProvided, cardSnapshot) => (
-                  <div
-                    ref={prov.innerRef}
-                    {...prov.draggableProps}
-                    {...prov.dragHandleProps}
-                  >
-                    <KanbanCard
-                      card={cards[cardId]}
-                      provided={prov}
-                      isCombining={!!cardSnapshot.combineTargetFor}
-                      isDragging={cardSnapshot.isDragging}
-                    />
-                  </div>
-                )}
-              </Draggable>
-            ))}
+            {list.cardIds.map((cardId, index) => {
+              const card = cards[cardId];
+              if (!card) {
+                console.warn(
+                  `Card with ID "${cardId}" not found in cards for list "${list.title}"`
+                );
+                return null;
+              }
+              return (
+                <Draggable draggableId={cardId} index={index} key={cardId}>
+                  {(prov: DraggableProvided, cardSnapshot) => (
+                    <div
+                      ref={prov.innerRef}
+                      {...prov.draggableProps}
+                      {...prov.dragHandleProps}
+                    >
+                      <KanbanCard
+                        card={cards[cardId]}
+                        provided={prov}
+                        isCombining={!!cardSnapshot.combineTargetFor}
+                        isDragging={cardSnapshot.isDragging}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              );
+            })}
             {provided.placeholder}
 
             <Button
