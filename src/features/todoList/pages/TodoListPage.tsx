@@ -24,6 +24,11 @@ const TodoList: React.FC = () => {
     setNewTodo("");
   };
 
+  const handleDeleteTodo = (id: string) => {
+    const filtered = todos.filter((t) => t.id !== id);
+    dispatch(setTodos(filtered));
+  };
+
   const todos: Todo[] = Object.values(kanban.cards).map((card) => ({
     id: card.id,
     text: card.content,
@@ -88,6 +93,7 @@ const TodoList: React.FC = () => {
                       onTextChange={(text) =>
                         dispatch(updateTodoText({ id: todo.id, text }))
                       }
+                      onDelete={handleDeleteTodo}
                     />
                   )}
                 </Draggable>
