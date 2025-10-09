@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import type { CardType, KanbanData } from "../../features/KanbanBoard/types";
 
 export type Todo = {
   id: string;
@@ -9,41 +10,66 @@ export type Todo = {
 
 const initialTodos: Todo[] = JSON.parse(
   localStorage.getItem("todos") ||
-    `[
-    {"id":"1","text":"Learn React","done":false},
+    `[{
+      "id":"1","text":"Learn React","done":false
+    },
     {"id":"2","text":"Practice TypeScript","done":false},
     {"id":"3","text":"Build a To-do App","done":false},
     {"id":"4","text":"Read about Vite","done":false},
     {"id":"5","text":"Install dependencies","done":false},
     {"id":"6","text":"Create components","done":false},
     {"id":"7","text":"Test drag and drop","done":false},
-    {"id":"8","text":"Style with CSS","done":false}
-  ]`
+    {"id":"8","text":"Style with CSS","done":false}]`
+);
+
+const todoCards: Record<string, CardType> = initialTodos.reduce((acc, todo) => {
+  acc[todo.id] = { id: todo.id, content: todo.text };
+  return acc;
+}, {} as Record<string, CardType>);
+
+const initialState: KanbanData = JSON.parse(
+  localStorage.getItem("kanban-data") ||
+    JSON.stringify({
+      lists: {
+        "todo-list": {
+          id: "todo-list",
+          title: "To Do",
+          cardIds: initialTodos.map((t) => t.id),
+        },
+        "list-2": { id: "list-2", title: "In Progress", cardIds: [] },
+        "list-3": { id: "list-3", title: "Done", cardIds: [] },
+      },
+      cards: todoCards,
+      listOrder: ["todo-list", "list-2", "list-3"],
+    })
 );
 
 const todosSlice = createSlice({
-  name: "todos",
-  initialState: initialTodos,
+  name: "kanban",
+  initialState,
   reducers: {
-    setTodos: (state, action: PayloadAction<Todo[]>) => {
-      localStorage.setItem("todos", JSON.stringify(action.payload));
+    setData: (state, action: PayloadAction<KanbanData>) => {
+      localStorage.setItem("kanban-data", JSON.stringify(action.payload));
       return action.payload;
     },
-    toggleTodo: (state, action: PayloadAction<string>) => {
-      const todo = state.find((t) => t.id === action.payload);
-      if (todo) todo.done = !todo.done;
-      localStorage.setItem("todos", JSON.stringify(state));
-    },
-    updateTodoText: (
+    addCard: (
       state,
-      action: PayloadAction<{ id: string; text: string }>
+      action: PayloadAction<{ listId: string; card: CardType }>
     ) => {
-      const todo = state.find((t) => t.id === action.payload.id);
-      if (todo) todo.text = action.payload.text;
-      localStorage.setItem("todos", JSON.stringify(state));
+      const { listId, card } = action.payload;
+      state.cards[card.id] = card;
+      state.lists[listId].cardIds.push(card.id);
+      localStorage.setItem("kanban-data", JSON.stringify(state));
+    },
+    editCard: (
+      state,
+      action: PayloadAction<{ cardId: string; content: string }>
+    ) => {
+      state.cards[action.payload.cardId].content = action.payload.content;
+      localStorage.setItem("kanban-data", JSON.stringify(state));
     },
   },
 });
 
-export const { setTodos, toggleTodo, updateTodoText } = todosSlice.actions;
+export const { setData, addCard, editCard } = todosSlice.actions;
 export default todosSlice.reducer;

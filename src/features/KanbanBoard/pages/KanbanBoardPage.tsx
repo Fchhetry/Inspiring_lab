@@ -6,26 +6,14 @@ import type {
   DraggableProvided,
 } from "@hello-pangea/dnd";
 import KanbanList from "../components/KanbanList";
-import type { DataType, CardType } from "../types";
+import type { DataType } from "../types";
 import { useSelector, useDispatch } from "react-redux";
-import { setData, type RootState } from "../../../store/Store";
-import { type Todo } from "../../../store/slice/todosSlice";
+import { setData } from "../../../store/slice/todosSlice";
+import { type RootState } from "../../../store/Store";
 
 const KanbanBoard: React.FC = () => {
   const data = useSelector((state: RootState) => state.kanban);
-  const todos = useSelector((state: RootState) => state.todos) as Todo[];
   const dispatch = useDispatch();
-
-  const todoCards: Record<string, CardType> = todos.reduce((acc, todo) => {
-    acc[todo.id] = { id: todo.id, content: todo.text };
-    return acc;
-  }, {} as Record<string, CardType>);
-
-  const todoList = {
-    id: "todo-list",
-    title: "To Do",
-    cardIds: todos.map((todo) => todo.id),
-  };
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
@@ -94,11 +82,10 @@ const KanbanBoard: React.FC = () => {
               minHeight: "80vh",
             }}
           >
-            <KanbanList list={todoList} cards={todoCards} />
+            <KanbanList list={data.lists["todo-list"]} cards={data.cards} />
 
             {data.listOrder.map((listId, index) => {
               const list = data.lists[listId];
-              //if (!list) return null;
               if (list.title === "To Do") return null;
 
               return (

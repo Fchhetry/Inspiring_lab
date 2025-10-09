@@ -12,3 +12,8 @@ export interface DataType {
   cards: Record<string, CardType>;
   listOrder: string[];
 }
+export type KanbanData = {
+  lists: Record<string, ListType>;
+  cards: Record<string, CardType>;
+  listOrder: string[];
+};
