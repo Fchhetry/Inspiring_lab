@@ -57,22 +57,31 @@ const KanbanCard: React.FC<CardProps> = ({
           placeholder="Edit card content"
         />
       ) : (
-        <Group justify="space-between" align="flex-start" w="100%">
+        <Group
+          justify="space-between"
+          align="center"
+          w="100%"
+          style={{ display: "flex", alignItems: "center" }}
+        >
           <Text
             style={{
               flex: 1,
               wordBreak: "break-word",
               fontSize: 14,
               color: "#1a1a1a",
+              lineHeight: "1.4",
+              display: "flex",
+              alignItems: "center",
             }}
           >
-            {card.content}{" "}
+            {card.content}
           </Text>
+
           <ActionIcon
             onClick={() => setIsEditing(true)}
             variant="subtle"
-            mt={2}
             color="blue"
+            style={{ alignSelf: "center", marginTop: 0 }}
           >
             <IconEdit size={16} />
           </ActionIcon>

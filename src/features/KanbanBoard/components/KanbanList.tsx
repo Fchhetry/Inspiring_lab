@@ -43,7 +43,7 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
       <Title
         order={4}
         {...(dragHandleProps ?? {})}
-        style={{ marginBottom: 16 }}
+        style={{ marginBottom: 16, textAlign: "center" }}
       >
         {list.title}
       </Title>
