@@ -1,10 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import todosReducer from "./slice/todosSlice";
+import rootReducer from "./reducer";
 
 const store = configureStore({
-  reducer: {
-    kanban: todosReducer,
-  },
+  reducer: rootReducer,
 });
 
 export type RootState = ReturnType<typeof store.getState>;

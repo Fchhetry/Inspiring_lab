@@ -1,10 +1,9 @@
 import { MantineProvider, Center } from "@mantine/core";
 import { Provider } from "react-redux";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import store from "./store/Store";
-import TodoList from "./features/todoList/pages/TodoListPage";
-import KanbanBoard from "./features/KanbanBoard/pages/KanbanBoardPage";
+import AppRoutes from "./routes";
 
 function App() {
   return (
@@ -12,10 +11,7 @@ function App() {
       <MantineProvider>
         <Router>
           <Center style={{ width: "100vw", height: "100vh" }}>
-            <Routes>
-              <Route path="/todos" element={<TodoList />} />
-              <Route path="/kanban" element={<KanbanBoard />} />
-            </Routes>
+            <AppRoutes />
           </Center>
         </Router>
       </MantineProvider>
