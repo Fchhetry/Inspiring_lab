@@ -58,7 +58,6 @@ const todosSlice = createSlice({
     ) => {
       const { listId, card } = action.payload;
 
-      //state.cards[card.id] = card;
       state.cards[card.id] = {
         id: card.id,
         content: card.content,
@@ -68,6 +67,26 @@ const todosSlice = createSlice({
 
       state.lists[listId].cardIds.push(card.id);
       localStorage.setItem("kanban-data", JSON.stringify(state));
+    },
+    deleteCard: (state, action: PayloadAction<{ cardId: string }>) => {
+      const { cardId } = action.payload;
+      delete state.cards[cardId];
+      Object.values(state.lists).forEach((list) => {
+        list.cardIds = list.cardIds.filter((id) => id !== cardId);
+      });
+    },
+    copyCard: (state, action: PayloadAction<{ cardId: string }>) => {
+      const { cardId } = action.payload;
+      const original = state.cards[cardId];
+      if (!original) return;
+
+      const newCard = { ...original, id: `card-${Date.now()}` };
+      state.cards[newCard.id] = newCard;
+      Object.values(state.lists).forEach((list) => {
+        if (list.cardIds.includes(cardId)) {
+          list.cardIds.push(newCard.id);
+        }
+      });
     },
     editCard: (
       state,
@@ -79,5 +98,6 @@ const todosSlice = createSlice({
   },
 });
 
-export const { setData, addCard, editCard } = todosSlice.actions;
+export const { setData, addCard, editCard, deleteCard, copyCard } =
+  todosSlice.actions;
 export default todosSlice.reducer;

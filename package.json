@@ -19,6 +19,7 @@
     "@tiptap/react": "^3.6.6",
     "@tiptap/starter-kit": "^3.6.6",
     "react": "^19.1.1",
+    "react-contexify": "^6.0.0",
     "react-dom": "^19.1.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.4"

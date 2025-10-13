@@ -68,6 +68,7 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
           backgroundColor: "#bfd9f3ff",
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
           maxHeight: "80vh",
         }}
       >
@@ -124,32 +125,33 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
                 );
               })}
               {provided.placeholder}
-
-              {!opened && (
-                <Button
-                  fullWidth
-                  mt="sm"
-                  variant="light"
-                  color="gray"
-                  radius="sm"
-                  onClick={() => setOpened(true)}
-                  style={{ marginTop: "auto" }}
-                >
-                  + Add a card
-                </Button>
-              )}
             </Stack>
           )}
         </Droppable>
+        {!opened && (
+          <Button
+            fullWidth
+            mt="sm"
+            variant="light"
+            color="gray"
+            radius="sm"
+            onClick={() => setOpened(true)}
+            style={{ minHeight: 36 }}
+          >
+            + Add a card
+          </Button>
+        )}
       </Paper>
 
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
         withCloseButton={false}
-        withinPortal={false}
+        withinPortal={true}
+        centered
+        keepMounted={true}
         transitionProps={{ transition: "fade", duration: 150 }}
-        overlayProps={{ backgroundOpacity: 0 }}
+        overlayProps={{ backgroundOpacity: 0, blur: 2 }}
         styles={{
           content: {
             position: "relative",
@@ -196,19 +198,28 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
             <Title order={6} mb={4}>
               Description
             </Title>
-            <RichTextEditor editor={editor} style={{ minHeight: 150 }}>
-              <RichTextEditor.Toolbar sticky>
-                <RichTextEditor.ControlsGroup>
-                  <RichTextEditor.Bold />
-                  <RichTextEditor.Italic />
-                  <RichTextEditor.Underline />
-                  <RichTextEditor.BulletList />
-                  <RichTextEditor.OrderedList />
-                </RichTextEditor.ControlsGroup>
-              </RichTextEditor.Toolbar>
+            <div
+              style={{
+                border: "1px solid #dee2e6",
+                borderRadius: 8,
+                overflow: "hidden",
+                backgroundColor: "white",
+              }}
+            >
+              <RichTextEditor editor={editor} style={{ minHeight: 150 }}>
+                <RichTextEditor.Toolbar sticky stickyOffset={0}>
+                  <RichTextEditor.ControlsGroup>
+                    <RichTextEditor.Bold />
+                    <RichTextEditor.Italic />
+                    <RichTextEditor.Underline />
+                    <RichTextEditor.BulletList />
+                    <RichTextEditor.OrderedList />
+                  </RichTextEditor.ControlsGroup>
+                </RichTextEditor.Toolbar>
 
-              <RichTextEditor.Content />
-            </RichTextEditor>
+                <RichTextEditor.Content />
+              </RichTextEditor>
+            </div>
           </div>
 
           <Group justify="flex-end" mt="md">
