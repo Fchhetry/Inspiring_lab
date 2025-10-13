@@ -9,6 +9,7 @@ export type TodoItemProps = {
   provided: DraggableProvided;
   snapshot: DraggableStateSnapshot;
   onTextChange: (text: string) => void;
+  onDelete?: (id: string) => void;
 };
 
 export type EditableTextProps = {
