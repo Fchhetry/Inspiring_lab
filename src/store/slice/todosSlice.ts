@@ -57,7 +57,15 @@ const todosSlice = createSlice({
       action: PayloadAction<{ listId: string; card: CardType }>
     ) => {
       const { listId, card } = action.payload;
-      state.cards[card.id] = card;
+
+      //state.cards[card.id] = card;
+      state.cards[card.id] = {
+        id: card.id,
+        content: card.content,
+        title: card.title ?? card.content,
+        description: card.description ?? "",
+      };
+
       state.lists[listId].cardIds.push(card.id);
       localStorage.setItem("kanban-data", JSON.stringify(state));
     },

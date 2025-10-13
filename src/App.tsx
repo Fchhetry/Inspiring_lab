@@ -1,4 +1,7 @@
-import { MantineProvider, Center } from "@mantine/core";
+import {
+  MantineProvider,
+  // Center
+} from "@mantine/core";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 
@@ -10,9 +13,9 @@ function App() {
     <Provider store={store}>
       <MantineProvider>
         <Router>
-          <Center style={{ width: "100vw", height: "100vh" }}>
-            <AppRoutes />
-          </Center>
+          {/* <Center style={{ width: "100vw", height: "100vh" }}> */}
+          <AppRoutes />
+          {/* </Center> */}
         </Router>
       </MantineProvider>
     </Provider>

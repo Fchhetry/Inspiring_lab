@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { Group, TextInput } from "@mantine/core";
-import { IconGripVertical } from "@tabler/icons-react";
+import { Group, TextInput, ActionIcon } from "@mantine/core";
+import { IconGripVertical, IconTrash } from "@tabler/icons-react";
 import type { TodoItemProps, EditableTextProps } from "../../../types";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DragHandle: React.FC<{ dragHandleProps: any }> = ({
   dragHandleProps,
 }) => (
@@ -23,11 +23,20 @@ const EditableText: React.FC<EditableTextProps> = ({
     variant="unstyled"
     styles={{
       input: {
+        border: "none",
+        outline: "none",
+        boxShadow: "none",
+        background: "transparent",
+        padding: 0,
+        margin: 0,
         fontSize: "16px",
-        textDecoration: done ? "line-through" : "none",
       },
     }}
-    style={{ flex: 1, width: "100%" }}
+    style={{
+      flex: 1,
+      width: "100%",
+      textDecoration: done ? "line-through" : "none",
+    }}
   />
 );
 
@@ -36,25 +45,42 @@ const TodoItem: React.FC<TodoItemProps> = ({
   provided,
   snapshot,
   onTextChange,
-}) => (
-  <Group
-    ref={provided.innerRef}
-    {...provided.draggableProps}
-    gap="sm"
-    style={{
-      border: "1px solid #ccc",
-      padding: "10px",
-      background: snapshot.isDragging ? "#d1fae5" : "#fff",
-      borderRadius: "6px",
-      marginBottom: "6px",
-      display: "flex",
-      alignItems: "center",
-      ...provided.draggableProps.style,
-    }}
-  >
-    <DragHandle dragHandleProps={provided.dragHandleProps} />
-    <EditableText value={todo.text} done={todo.done} onChange={onTextChange} />
-  </Group>
-);
+  onDelete,
+}) => {
+  return (
+    <Group
+      ref={provided.innerRef}
+      {...provided.draggableProps}
+      gap="sm"
+      style={{
+        border: "1px solid #ccc",
+        padding: "10px",
+        background: snapshot.isDragging ? "#d1fae5" : "#fff",
+        borderRadius: "6px",
+        marginBottom: "6px",
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
+      }}
+    >
+      <DragHandle dragHandleProps={provided.dragHandleProps} />
+
+      <EditableText
+        value={todo.text}
+        done={todo.done}
+        onChange={onTextChange}
+      />
+
+      <ActionIcon
+        color="red"
+        variant="subtle"
+        onClick={() => onDelete?.(todo.id)}
+        title="Delete todo"
+      >
+        <IconTrash size={18} />
+      </ActionIcon>
+    </Group>
+  );
+};
 
 export default TodoItem;
