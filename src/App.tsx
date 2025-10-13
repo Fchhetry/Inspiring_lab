@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 import store from "./store/Store";
 import AppRoutes from "./routes";
-
+import "@mantine/core/styles.css";
 function App() {
   return (
     <Provider store={store}>
