@@ -1,12 +1,12 @@
 import React from "react";
-import { Group, TextInput, ActionIcon } from "@mantine/core";
+import { TextInput, ActionIcon } from "@mantine/core";
 import { IconGripVertical, IconTrash } from "@tabler/icons-react";
 import type { TodoItemProps, EditableTextProps } from "../../../../types";
 
 const DragHandle: React.FC<{ dragHandleProps: any }> = ({
   dragHandleProps,
 }) => (
-  <span {...dragHandleProps} style={{ cursor: "grab" }}>
+  <span {...dragHandleProps} style={{ cursor: "grab", display: "flex" }}>
     <IconGripVertical size={20} stroke={2} />
   </span>
 );
@@ -47,26 +47,25 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onDelete,
 }) => {
   return (
-    <Group
+    <div
       ref={provided.innerRef}
       {...provided.draggableProps}
-      gap="sm"
       style={{
-        border: "1px solid #ccc",
-        padding: "10px",
+        ...provided.draggableProps.style,
         background: snapshot.isDragging ? "#d1fae5" : "#fff",
-        borderRadius: "6px",
-        marginBottom: "6px",
+        border: "1px solid #ccc",
+        borderRadius: 6,
+        padding: 10,
+        marginBottom: 6,
         display: "flex",
         alignItems: "center",
-        width: "100%",
       }}
     >
       <DragHandle dragHandleProps={provided.dragHandleProps} />
 
       <EditableText
         value={todo.text}
-        done={todo.done}
+        done={todo.done ?? false}
         onChange={onTextChange}
       />
 
@@ -78,7 +77,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
       >
         <IconTrash size={18} />
       </ActionIcon>
-    </Group>
+    </div>
   );
 };
 
