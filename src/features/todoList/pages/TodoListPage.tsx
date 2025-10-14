@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
   AppShell,
   AppShellHeader,
+  AppShellNavbar,
   AppShellMain,
   Group,
   Title,
@@ -11,9 +13,12 @@ import {
   Stack,
   TextInput,
   Button,
-  Drawer,
   ActionIcon,
   Container,
+  Affix,
+  Menu,
+  NavLink,
+  ScrollArea,
 } from "@mantine/core";
 import { IconListCheck } from "@tabler/icons-react";
 import type { RootState } from "../../../store/Store";
@@ -24,8 +29,9 @@ import TodoItem from "../components/TodoItem/Index";
 const TodoList: React.FC = () => {
   const kanbanData = useSelector((state: RootState) => state.kanban);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [newTodo, setNewTodo] = useState("");
-  const [opened, setOpened] = useState(false);
 
   const todos =
     kanbanData.lists?.["todo-list"]?.cardIds?.map((id) => ({
@@ -91,92 +97,148 @@ const TodoList: React.FC = () => {
     );
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <AppShell header={{ height: 60 }} padding="md">
-      <AppShellHeader>
+    <AppShell
+      header={{ height: 65 }}
+      navbar={{ width: 200, breakpoint: "sm" }}
+      padding="md"
+    >
+      <AppShellHeader
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(37,99,235,1) 0%, rgba(99,102,241,1) 100%)",
+          color: "white",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+        }}
+      >
         <Group h="100%" px="md" justify="space-between">
-          <Title order={3} fw={600}>
+          <Title
+            order={3}
+            fw={700}
+            style={{ color: "white", cursor: "pointer" }}
+            onClick={() => navigate("/todos")}
+          >
             Inspiring Lab
           </Title>
-          <ActionIcon
-            size="lg"
-            radius="xl"
-            variant="filled"
-            color="blue"
-            onClick={() => setOpened(true)}
-            title="Open To-Do List"
-          >
-            <IconListCheck size={22} />
-          </ActionIcon>
         </Group>
       </AppShellHeader>
 
+      <AppShellNavbar p="md">
+        <ScrollArea type="auto" style={{ height: "100%" }}>
+          <Stack gap="xs">
+            <NavLink
+              label="Todo"
+              active={isActive("/todos")}
+              onClick={() => navigate("/todos")}
+              styles={{
+                root: {
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  backgroundColor: isActive("/todos")
+                    ? "#e0e7ff"
+                    : "transparent",
+                  color: isActive("/todos") ? "#1e3a8a" : "#374151",
+                  transition: "all 0.2s ease",
+                },
+              }}
+            />
+            <NavLink
+              label="Kanban"
+              active={isActive("/kanban")}
+              onClick={() => navigate("/kanban")}
+              styles={{
+                root: {
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  backgroundColor: isActive("/kanban")
+                    ? "#e0e7ff"
+                    : "transparent",
+                  color: isActive("/kanban") ? "#1e3a8a" : "#374151",
+                  transition: "all 0.2s ease",
+                },
+              }}
+            />
+          </Stack>
+        </ScrollArea>
+      </AppShellNavbar>
+
       <AppShellMain>
         <Container size="md">
-          <Paper shadow="md" radius="md" p="xl" withBorder bg="#e2e8f0">
-            <Title order={2} mb="md">
+          <Paper shadow="md" radius="md" p="xl" withBorder bg="#f8fafc">
+            <Title order={2} mb="md" c="blue.7">
               Welcome to the Dashboard
             </Title>
-            <p>
-              Click the checklist icon on the top-right to open your To-Do list.
-            </p>
+            <p>Click the floating checklist icon to open your To-Do list.</p>
           </Paper>
         </Container>
       </AppShellMain>
 
-      <Drawer
-        opened={opened}
-        onClose={() => setOpened(false)}
-        title="📝 To-Do List"
-        padding="md"
-        position="right"
-        size="xl"
-      >
-        <Paper shadow="md" radius="md" p="md" withBorder>
-          <Group mb="md">
-            <TextInput
-              placeholder="Add a new task..."
-              value={newTodo}
-              onChange={(e) => setNewTodo(e.currentTarget.value)}
-              style={{ flex: 1 }}
-            />
-            <Button onClick={handleAddTodo}>Add</Button>
-          </Group>
+      <Affix bottom={20} right={20}>
+        <Menu shadow="md" width={400} position="top-end">
+          <Menu.Target>
+            <ActionIcon
+              size="xl"
+              radius="xl"
+              variant="gradient"
+              gradient={{ from: "blue", to: "indigo" }}
+              title="Open To-Do Menu"
+            >
+              <IconListCheck size={28} />
+            </ActionIcon>
+          </Menu.Target>
 
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="todos">
-              {(provided) => (
-                <Stack
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  gap="sm"
-                >
-                  {todos.map((todo, index) => (
-                    <Draggable
-                      key={todo.id}
-                      draggableId={todo.id}
-                      index={index}
+          <Menu.Dropdown>
+            <Paper shadow="md" radius="md" p="md" withBorder>
+              <Group mb="md">
+                <TextInput
+                  placeholder="Add a new task..."
+                  value={newTodo}
+                  onChange={(e) => setNewTodo(e.currentTarget.value)}
+                  style={{ flex: 1 }}
+                />
+                <Button onClick={handleAddTodo} color="blue">
+                  Add
+                </Button>
+              </Group>
+
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="todos">
+                  {(provided) => (
+                    <Stack
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      gap="sm"
                     >
-                      {(provided, snapshot) => (
-                        <TodoItem
-                          todo={todo}
-                          provided={provided}
-                          snapshot={snapshot}
-                          onTextChange={(text) =>
-                            handleTextChange(todo.id, text)
-                          }
-                          onDelete={() => handleDeleteTodo(todo.id)}
-                        />
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </Stack>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </Paper>
-      </Drawer>
+                      {todos.map((todo, index) => (
+                        <Draggable
+                          key={todo.id}
+                          draggableId={todo.id}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <TodoItem
+                              todo={todo}
+                              provided={provided}
+                              snapshot={snapshot}
+                              onTextChange={(text) =>
+                                handleTextChange(todo.id, text)
+                              }
+                              onDelete={() => handleDeleteTodo(todo.id)}
+                            />
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </Stack>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            </Paper>
+          </Menu.Dropdown>
+        </Menu>
+      </Affix>
     </AppShell>
   );
 };
