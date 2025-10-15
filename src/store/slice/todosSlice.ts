@@ -90,9 +90,23 @@ const todosSlice = createSlice({
     },
     editCard: (
       state,
-      action: PayloadAction<{ cardId: string; content: string }>
+      action: PayloadAction<{
+        cardId: string;
+        content?: string;
+        title?: string;
+        description?: string;
+      }>
     ) => {
-      state.cards[action.payload.cardId].content = action.payload.content;
+      // state.cards[action.payload.cardId].content = action.payload.content;
+      const card = state.cards[action.payload.cardId];
+      if (card) {
+        if (action.payload.content !== undefined)
+          card.content = action.payload.content;
+        if (action.payload.title !== undefined)
+          card.title = action.payload.title;
+        if (action.payload.description !== undefined)
+          card.description = action.payload.description;
+      }
       localStorage.setItem("kanban-data", JSON.stringify(state));
     },
   },
