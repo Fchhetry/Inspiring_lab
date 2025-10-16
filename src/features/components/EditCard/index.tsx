@@ -32,31 +32,39 @@ const EditCard: React.FC<EditCardProps> = ({
   editingCard,
 }) => {
   const dispatch = useDispatch();
-
   const [title, setTitle] = useState("");
+
   const editor = useEditor({
     extensions: [StarterKit],
     content: "",
   });
 
   useEffect(() => {
-    if (editingCard && editor) {
-      setTitle(editingCard.title || "");
-      editor.commands.setContent(editingCard.description || "");
-    } else {
-      setTitle("");
-      editor.commands.setContent("");
+    if (!editor) return;
+
+    if (opened) {
+      if (editingCard) {
+        setTitle(editingCard.title || "");
+        editor.commands.setContent(editingCard.description || "");
+      } else {
+        setTitle("");
+        editor.commands.setContent("");
+      }
     }
-  }, [editingCard, editor]);
+  }, [opened, editingCard, editor]);
 
   const handleCancel = () => {
     setTitle("");
     editor?.commands.setContent("");
     onClose();
   };
+
   const handleSave = () => {
+    if (!editor) return;
+
     const trimmedTitle = title.trim();
-    const descriptionHTML = editor?.getHTML() ?? "";
+    const descriptionHTML = editor.getHTML();
+
     if (!trimmedTitle) return;
 
     if (editingCard) {
@@ -77,6 +85,7 @@ const EditCard: React.FC<EditCardProps> = ({
       };
       dispatch(addCard({ listId, card: newCard }));
     }
+
     handleCancel();
   };
 
@@ -86,8 +95,8 @@ const EditCard: React.FC<EditCardProps> = ({
       onClose={handleCancel}
       withCloseButton={false}
       centered
-      withinPortal={true}
-      keepMounted={false}
+      withinPortal
+      keepMounted
       transitionProps={{ transition: "fade", duration: 150 }}
       overlayProps={{ backgroundOpacity: 0.25, blur: 2 }}
       styles={{

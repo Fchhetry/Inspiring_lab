@@ -3,11 +3,11 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DroppableProvided, DraggableProvided } from "@hello-pangea/dnd";
 import type { CardType, ListType } from "../types";
 import KanbanCard from "./Kanbancard";
-import { Paper, Title, Button, Stack } from "@mantine/core";
+import { Paper, Title, Stack } from "@mantine/core";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import EditCard from "../../components/EditCard";
-
+import AddCard from "../../components/AddCard";
 interface ListProps {
   list: ListType;
   cards: Record<string, CardType>;
@@ -125,24 +125,13 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
           )}
         </Droppable>
 
-        {!opened && (
-          <Button
-            fullWidth
-            mt="sm"
-            variant="light"
-            color="gray"
-            radius="sm"
-            onClick={() => {
-              setEditingCard(null);
-              editor?.commands.setContent("");
-              setOpened(true);
-              setIsEditMode(false);
-            }}
-            style={{ minHeight: 36 }}
-          >
-            + Add a card
-          </Button>
-        )}
+        <AddCard
+          opened={opened}
+          setOpened={setOpened}
+          editor={editor}
+          setIsEditMode={setIsEditMode}
+          setEditingCard={setEditingCard}
+        />
       </Paper>
 
       <EditCard
