@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, ActionIcon } from "@mantine/core";
+import { TextInput, ActionIcon, Tooltip } from "@mantine/core";
 import { IconGripVertical, IconTrash } from "@tabler/icons-react";
 import type { TodoItemProps, EditableTextProps } from "../../../../types";
 
@@ -16,27 +16,32 @@ const EditableText: React.FC<EditableTextProps> = ({
   done,
   onChange,
 }) => (
-  <TextInput
-    value={value}
-    onChange={(e) => onChange(e.currentTarget.value)}
-    variant="unstyled"
-    styles={{
-      input: {
-        border: "none",
-        outline: "none",
-        boxShadow: "none",
-        background: "transparent",
-        padding: 0,
-        margin: 0,
-        fontSize: "16px",
-      },
-    }}
-    style={{
-      flex: 1,
-      width: "100%",
-      textDecoration: done ? "line-through" : "none",
-    }}
-  />
+  <Tooltip label={value} position="top" withArrow>
+    <TextInput
+      value={value}
+      onChange={(e) => onChange(e.currentTarget.value)}
+      variant="unstyled"
+      styles={{
+        input: {
+          border: "none",
+          outline: "none",
+          boxShadow: "none",
+          background: "transparent",
+          padding: 0,
+          margin: 0,
+          fontSize: "16px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        },
+      }}
+      style={{
+        flex: 1,
+        width: "100%",
+        textDecoration: done ? "line-through" : "none",
+      }}
+    />
+  </Tooltip>
 );
 
 const TodoItem: React.FC<TodoItemProps> = ({
@@ -55,10 +60,11 @@ const TodoItem: React.FC<TodoItemProps> = ({
         background: snapshot.isDragging ? "#d1fae5" : "#fff",
         border: "1px solid #ccc",
         borderRadius: 6,
-        padding: 10,
-        marginBottom: 6,
+        padding: "4px 8px",
+        marginBottom: 4,
         display: "flex",
         alignItems: "center",
+        minHeight: 36,
       }}
     >
       <DragHandle dragHandleProps={provided.dragHandleProps} />

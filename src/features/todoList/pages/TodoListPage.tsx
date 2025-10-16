@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
-  AppShell,
-  AppShellHeader,
-  AppShellNavbar,
-  AppShellMain,
-  Group,
-  Title,
   Paper,
   Stack,
   TextInput,
@@ -17,9 +9,9 @@ import {
   Container,
   Affix,
   Menu,
-  NavLink,
-  ScrollArea,
+  Group,
 } from "@mantine/core";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { IconListCheck } from "@tabler/icons-react";
 import type { RootState } from "../../../store/Store";
 import { setData, addCard, editCard } from "../../../store/slice/todosSlice";
@@ -29,8 +21,6 @@ import TodoItem from "../components/TodoItem/Index";
 const TodoList: React.FC = () => {
   const kanbanData = useSelector((state: RootState) => state.kanban);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [newTodo, setNewTodo] = useState("");
 
   const todos =
@@ -97,83 +87,16 @@ const TodoList: React.FC = () => {
     );
   };
 
-  const isActive = (path: string) => location.pathname === path;
-
   return (
-    <AppShell
-      header={{ height: 65 }}
-      navbar={{ width: 200, breakpoint: "sm" }}
-      padding="md"
-    >
-      <AppShellHeader
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(37,99,235,1) 0%, rgba(99,102,241,1) 100%)",
-          color: "white",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-        }}
-      >
-        <Group h="100%" px="md" justify="space-between">
-          <Title
-            order={3}
-            fw={700}
-            style={{ color: "white", cursor: "pointer" }}
-            onClick={() => navigate("/todos")}
-          >
-            Inspiring Lab
-          </Title>
-        </Group>
-      </AppShellHeader>
-
-      <AppShellNavbar p="md">
-        <ScrollArea type="auto" style={{ height: "100%" }}>
-          <Stack gap="xs">
-            <NavLink
-              label="Todo"
-              active={isActive("/todos")}
-              onClick={() => navigate("/todos")}
-              styles={{
-                root: {
-                  borderRadius: "8px",
-                  fontWeight: 600,
-                  backgroundColor: isActive("/todos")
-                    ? "#e0e7ff"
-                    : "transparent",
-                  color: isActive("/todos") ? "#1e3a8a" : "#374151",
-                  transition: "all 0.2s ease",
-                },
-              }}
-            />
-            <NavLink
-              label="Kanban"
-              active={isActive("/kanban")}
-              onClick={() => navigate("/kanban")}
-              styles={{
-                root: {
-                  borderRadius: "8px",
-                  fontWeight: 600,
-                  backgroundColor: isActive("/kanban")
-                    ? "#e0e7ff"
-                    : "transparent",
-                  color: isActive("/kanban") ? "#1e3a8a" : "#374151",
-                  transition: "all 0.2s ease",
-                },
-              }}
-            />
-          </Stack>
-        </ScrollArea>
-      </AppShellNavbar>
-
-      <AppShellMain>
-        <Container size="md">
-          <Paper shadow="md" radius="md" p="xl" withBorder bg="#f8fafc">
-            <Title order={2} mb="md" c="blue.7">
-              Welcome to the Dashboard
-            </Title>
-            <p>Click the floating checklist icon to open your To-Do list.</p>
-          </Paper>
-        </Container>
-      </AppShellMain>
+    <>
+      <Container size="md">
+        <Paper shadow="md" radius="md" p="xl" withBorder bg="#f8fafc">
+          <h2 style={{ color: "#1d4ed8", marginBottom: "12px" }}>
+            Welcome to the Dashboard
+          </h2>
+          <p>Click the floating checklist icon to open your To-Do list.</p>
+        </Paper>
+      </Container>
 
       <Affix bottom={20} right={20}>
         <Menu shadow="md" width={400} position="top-end">
@@ -189,7 +112,14 @@ const TodoList: React.FC = () => {
             </ActionIcon>
           </Menu.Target>
 
-          <Menu.Dropdown>
+          <Menu.Dropdown
+            style={{
+              padding: "10px",
+              width: "420px",
+              minHeight: "250px",
+              maxHeight: "600px",
+            }}
+          >
             <Paper shadow="md" radius="md" p="md" withBorder>
               <Group mb="md">
                 <TextInput
@@ -202,44 +132,51 @@ const TodoList: React.FC = () => {
                   Add
                 </Button>
               </Group>
-
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="todos">
-                  {(provided) => (
-                    <Stack
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      gap="sm"
-                    >
-                      {todos.map((todo, index) => (
-                        <Draggable
-                          key={todo.id}
-                          draggableId={todo.id}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <TodoItem
-                              todo={todo}
-                              provided={provided}
-                              snapshot={snapshot}
-                              onTextChange={(text) =>
-                                handleTextChange(todo.id, text)
-                              }
-                              onDelete={() => handleDeleteTodo(todo.id)}
-                            />
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </Stack>
-                  )}
-                </Droppable>
-              </DragDropContext>
+              <div
+                style={{
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                  paddingRight: "4",
+                }}
+              >
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId="todos">
+                    {(provided) => (
+                      <Stack
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        gap="sm"
+                      >
+                        {todos.map((todo, index) => (
+                          <Draggable
+                            key={todo.id}
+                            draggableId={todo.id}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <TodoItem
+                                todo={todo}
+                                provided={provided}
+                                snapshot={snapshot}
+                                onTextChange={(text) =>
+                                  handleTextChange(todo.id, text)
+                                }
+                                onDelete={() => handleDeleteTodo(todo.id)}
+                              />
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </Stack>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </div>
             </Paper>
           </Menu.Dropdown>
         </Menu>
       </Affix>
-    </AppShell>
+    </>
   );
 };
 
