@@ -2,7 +2,6 @@ import type {
   DraggableProvided,
   DraggableStateSnapshot,
 } from "@hello-pangea/dnd";
-import type { Todo } from "../store/slice/todosSlice";
 import type { CardType } from "../features/KanbanBoard/types";
 import type { Editor } from "@tiptap/react";
 
@@ -13,7 +12,6 @@ export type TodoItemProps = {
   onDelete: (id: number | string) => void;
   onUpdate?: (id: number | string, text: string) => void;
   onTextChange: (text: string) => void;
-  // onDelete?: (id: string) => void;
 };
 
 export type EditableTextProps = {
@@ -42,3 +40,10 @@ export interface CardProps {
   setIsEditMode: (value: boolean) => void;
   setOpened: (value: boolean) => void;
 }
+
+export type Todo = {
+  id: string;
+  text: string;
+  description?: string;
+  done: boolean;
+};

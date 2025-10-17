@@ -8,7 +8,8 @@ import type { CardType } from "../../KanbanBoard/types";
 interface ViewCardProps {
   opened: boolean;
   onClose: () => void;
-  card: CardType | null;
+  // card: CardType | null;
+  card: CardType;
   onEdit: (card: CardType) => void;
   onDelete: () => void;
 }

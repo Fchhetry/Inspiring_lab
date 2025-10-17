@@ -2,7 +2,7 @@ import type {
   DraggableProvided,
   DraggableStateSnapshot,
 } from "@hello-pangea/dnd";
-import type { Todo } from "../../../store/slice/todosSlice";
+import type { Todo } from "../../../types";
 
 export type TodoItemProps = {
   todo: Todo;
