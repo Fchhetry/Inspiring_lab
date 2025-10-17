@@ -1,93 +1,83 @@
 import React, { useState } from "react";
-import type { DraggableProvided } from "@hello-pangea/dnd";
 import type { CardType } from "../types";
 import { useDispatch } from "react-redux";
-import { editCard } from "../../../store/slice/todosSlice";
-import { IconEdit } from "@tabler/icons-react";
-import { Card, Textarea, Text, ActionIcon, Group } from "@mantine/core";
+import { deleteCard } from "../../../store/slice/todosSlice";
 
-interface CardProps {
-  card: CardType;
-  provided: DraggableProvided;
-  isCombining?: boolean;
-  isDragging?: boolean;
-}
+import { Card, Text } from "@mantine/core";
+
+import "react-contexify/ReactContexify.css";
+import ViewCard from "../../components/ViewCard";
+import type { CardProps } from "../../../types";
 
 const KanbanCard: React.FC<CardProps> = ({
   card,
   provided,
   isCombining,
   isDragging,
+  setEditingCard,
+  setIsEditMode,
+  setOpened,
 }) => {
   const dispatch = useDispatch();
-  const [isEditing, setIsEditing] = useState(false);
-  const [value, setValue] = useState(card.content);
+  const [viewOpened, setViewOpened] = useState(false);
 
-  const handleBlur = () => {
-    setIsEditing(false);
-    if (value.trim() !== card.content) {
-      dispatch(editCard({ cardId: card.id, content: value }));
-    }
+  const handleCardClick = () => {
+    setViewOpened(true);
+  };
+
+  const handleEditFromView = (card: CardType) => {
+    setViewOpened(false);
+    setEditingCard(card);
+    setIsEditMode(true);
+    setOpened(true);
+  };
+
+  const handleDelete = () => {
+    dispatch(deleteCard({ cardId: card.id }));
+    setViewOpened(false);
   };
 
   return (
-    <Card
-      shadow="sm"
-      padding="sm"
-      radius="md"
-      withBorder
-      ref={provided.innerRef}
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
-      style={{
-        marginBottom: "8px",
-        background: isDragging ? "#e3f2fd" : "white",
-        border: "1px solid #e2e8f0",
-        opacity: isCombining ? 0.7 : 1,
-        transition: "background 0.2s ease, box-shadow 0.2s ease",
-      }}
-    >
-      {isEditing ? (
-        <Textarea
-          autosize
-          minRows={2}
-          value={value}
-          onChange={(e) => setValue(e.currentTarget.value)}
-          onBlur={handleBlur}
-          placeholder="Edit card content"
-        />
-      ) : (
-        <Group
-          justify="space-between"
-          align="center"
-          w="100%"
-          style={{ display: "flex", alignItems: "center" }}
+    <>
+      <Card
+        shadow="sm"
+        padding="sm"
+        radius="md"
+        withBorder
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        onClick={handleCardClick}
+        style={{
+          marginBottom: 8,
+          background: isDragging ? "#e3f2fd" : "white",
+          border: "1px solid #e2e8f0",
+          opacity: isCombining ? 0.7 : 1,
+          transition: "background 0.2s ease, box-shadow 0.2s ease",
+          cursor: "pointer",
+        }}
+      >
+        <Text
+          style={{
+            flex: 1,
+            wordBreak: "break-word",
+            fontSize: 14,
+            color: "#1a1a1a",
+            lineHeight: 1.4,
+          }}
         >
-          <Text
-            style={{
-              flex: 1,
-              wordBreak: "break-word",
-              fontSize: 14,
-              color: "#1a1a1a",
-              lineHeight: "1.4",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {card.content}
-          </Text>
+          {card.title || card.content}
+        </Text>
+      </Card>
 
-          <ActionIcon
-            onClick={() => setIsEditing(true)}
-            variant="subtle"
-            color="blue"
-            style={{ alignSelf: "center", marginTop: 0 }}
-          >
-            <IconEdit size={16} />
-          </ActionIcon>
-        </Group>
-      )}
-    </Card>
+      <ViewCard
+        opened={viewOpened}
+        onClose={() => setViewOpened(false)}
+        card={card}
+        onEdit={handleEditFromView}
+        onDelete={handleDelete}
+      />
+    </>
   );
 };
 

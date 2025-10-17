@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DroppableProvided, DraggableProvided } from "@hello-pangea/dnd";
 import type { CardType, ListType } from "../types";
 import KanbanCard from "./Kanbancard";
-import { useDispatch } from "react-redux";
-import { addCard } from "../../../store/slice/todosSlice";
-import { Paper, Title, Button, Stack } from "@mantine/core";
+import { Paper, Title, Stack, Button } from "@mantine/core";
+import { useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import CreateEditCard from "../../components/CreateEditCard";
 
 interface ListProps {
   list: ListType;
@@ -14,16 +15,16 @@ interface ListProps {
 }
 
 const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
-  const dispatch = useDispatch();
+  const [opened, setOpened] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingCard, setEditingCard] = useState<CardType | null>(null);
 
-  const handleAddCard = () => {
-    const newId = `card-${Date.now()}`;
-    dispatch(
-      addCard({
-        listId: list.id,
-        card: { id: newId, content: "New card" },
-      })
-    );
+  const editor = useEditor({ extensions: [StarterKit], content: "" });
+
+  const handleAddNewCard = () => {
+    setEditingCard(null);
+    setIsEditMode(false);
+    setOpened(true);
   };
 
   return (
@@ -37,6 +38,7 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
         backgroundColor: "#bfd9f3ff",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "space-between",
         maxHeight: "80vh",
       }}
     >
@@ -67,12 +69,7 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
           >
             {list.cardIds.map((cardId, index) => {
               const card = cards[cardId];
-              if (!card) {
-                console.warn(
-                  `Card with ID "${cardId}" not found in cards for list "${list.title}"`
-                );
-                return null;
-              }
+              if (!card) return null;
               return (
                 <Draggable draggableId={cardId} index={index} key={cardId}>
                   {(prov: DraggableProvided, cardSnapshot) => (
@@ -82,10 +79,13 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
                       {...prov.dragHandleProps}
                     >
                       <KanbanCard
-                        card={cards[cardId]}
+                        card={card}
                         provided={prov}
                         isCombining={!!cardSnapshot.combineTargetFor}
                         isDragging={cardSnapshot.isDragging}
+                        setEditingCard={setEditingCard}
+                        setIsEditMode={setIsEditMode}
+                        setOpened={setOpened}
                       />
                     </div>
                   )}
@@ -93,21 +93,31 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
               );
             })}
             {provided.placeholder}
-
-            <Button
-              fullWidth
-              mt="sm"
-              variant="light"
-              color="gray"
-              radius="sm"
-              onClick={handleAddCard}
-              style={{ marginTop: "auto" }}
-            >
-              + Add a card
-            </Button>
           </Stack>
         )}
       </Droppable>
+
+      <Button
+        fullWidth
+        mt="sm"
+        variant="light"
+        color="gray"
+        radius="sm"
+        onClick={handleAddNewCard}
+      >
+        + Add a card
+      </Button>
+
+      <CreateEditCard
+        listId={list.id}
+        editingCard={editingCard}
+        setEditingCard={setEditingCard}
+        opened={opened}
+        setOpened={setOpened}
+        isEditMode={isEditMode}
+        setIsEditMode={setIsEditMode}
+        editor={editor}
+      />
     </Paper>
   );
 };

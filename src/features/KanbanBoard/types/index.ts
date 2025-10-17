@@ -6,6 +6,8 @@ export interface ListType {
 export interface CardType {
   id: string;
   content: string;
+  title?: string;
+  description?: string;
 }
 export interface DataType {
   lists: Record<string, ListType>;
