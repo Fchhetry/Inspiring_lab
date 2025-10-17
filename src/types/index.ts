@@ -12,7 +12,7 @@ export type TodoItemProps = {
   onDelete: (id: number | string) => void;
   onUpdate?: (id: number | string, text: string) => void;
   onTextChange: (text: string) => void;
-  onDelete?: (id: string) => void;
+ 
 };
 
 export type EditableTextProps = {

@@ -1,20 +1,27 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useSelector, useDispatch } from "react-redux";
+import {
+  Paper,
+  Stack,
+  TextInput,
+  Button,
+  ActionIcon,
+  Container,
+  Affix,
+  Menu,
+  Group,
+} from "@mantine/core";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { IconListCheck } from "@tabler/icons-react";
 import type { RootState } from "../../../store/Store";
 import { setData, addCard, editCard } from "../../../store/slice/todosSlice";
 import type { CardType } from "../../KanbanBoard/types";
-
-import { Paper, Stack, Title, TextInput, Button, Group } from "@mantine/core";
 import TodoItem from "../components/TodoItem/Index";
 
 const TodoList: React.FC = () => {
   const kanbanData = useSelector((state: RootState) => state.kanban);
   const dispatch = useDispatch();
   const [newTodo, setNewTodo] = useState("");
-
-  console.log("kanbanData:", kanbanData);
 
   const todos =
     kanbanData.lists?.["todo-list"]?.cardIds?.map((id) => ({
@@ -25,12 +32,7 @@ const TodoList: React.FC = () => {
 
   const handleAddTodo = () => {
     if (!newTodo.trim()) return;
-
-    const newCard: CardType = {
-      id: Date.now().toString(),
-      content: newTodo,
-    };
-
+    const newCard: CardType = { id: Date.now().toString(), content: newTodo };
     dispatch(addCard({ listId: "todo-list", card: newCard }));
     setNewTodo("");
   };
@@ -65,7 +67,6 @@ const TodoList: React.FC = () => {
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
-
     const updatedCardIds = Array.from(
       kanbanData.lists?.["todo-list"]?.cardIds || []
     );
@@ -87,54 +88,95 @@ const TodoList: React.FC = () => {
   };
 
   return (
-    <Paper
-      shadow="md"
-      radius="md"
-      p="lg"
-      withBorder
-      style={{ maxWidth: 400, margin: "0 auto" }}
-    >
-      <Title order={3} mb="md">
-        📝 To-Do List
-      </Title>
+    <>
+      <Container size="md">
+        <Paper shadow="md" radius="md" p="xl" withBorder bg="#f8fafc">
+          <h2 style={{ color: "#1d4ed8", marginBottom: "12px" }}>
+            Welcome to the Dashboard
+          </h2>
+          <p>Click the floating checklist icon to open your To-Do list.</p>
+        </Paper>
+      </Container>
 
-      <Group mb="md">
-        <TextInput
-          placeholder="Add a new task..."
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.currentTarget.value)}
-          style={{ flex: 1 }}
-        />
-        <Button onClick={handleAddTodo}>Add</Button>
-      </Group>
-
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="todos">
-          {(provided) => (
-            <Stack
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              gap="sm"
+      <Affix bottom={20} right={20}>
+        <Menu shadow="md" width={400} position="top-end">
+          <Menu.Target>
+            <ActionIcon
+              size="xl"
+              radius="xl"
+              variant="gradient"
+              gradient={{ from: "blue", to: "indigo" }}
+              title="Open To-Do Menu"
             >
-              {todos.map((todo, index) => (
-                <Draggable key={todo.id} draggableId={todo.id} index={index}>
-                  {(provided, snapshot) => (
-                    <TodoItem
-                      todo={todo}
-                      provided={provided}
-                      snapshot={snapshot}
-                      onTextChange={(text) => handleTextChange(todo.id, text)}
-                      onDelete={() => handleDeleteTodo(todo.id)}
-                    />
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </Stack>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </Paper>
+              <IconListCheck size={28} />
+            </ActionIcon>
+          </Menu.Target>
+
+          <Menu.Dropdown
+            style={{
+              padding: "10px",
+              width: "420px",
+              minHeight: "250px",
+              maxHeight: "600px",
+            }}
+          >
+            <Paper shadow="md" radius="md" p="md" withBorder>
+              <Group mb="md">
+                <TextInput
+                  placeholder="Add a new task..."
+                  value={newTodo}
+                  onChange={(e) => setNewTodo(e.currentTarget.value)}
+                  style={{ flex: 1 }}
+                />
+                <Button onClick={handleAddTodo} color="blue">
+                  Add
+                </Button>
+              </Group>
+              <div
+                style={{
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                  paddingRight: "4",
+                }}
+              >
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId="todos">
+                    {(provided) => (
+                      <Stack
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        gap="sm"
+                      >
+                        {todos.map((todo, index) => (
+                          <Draggable
+                            key={todo.id}
+                            draggableId={todo.id}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <TodoItem
+                                todo={todo}
+                                provided={provided}
+                                snapshot={snapshot}
+                                onTextChange={(text) =>
+                                  handleTextChange(todo.id, text)
+                                }
+                                onDelete={() => handleDeleteTodo(todo.id)}
+                              />
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </Stack>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </div>
+            </Paper>
+          </Menu.Dropdown>
+        </Menu>
+      </Affix>
+    </>
   );
 };
 
