@@ -68,50 +68,44 @@ const todosSlice = createSlice({
       state.lists[listId].cardIds.push(card.id);
       localStorage.setItem("kanban-data", JSON.stringify(state));
     },
+
     deleteCard: (state, action: PayloadAction<{ cardId: string }>) => {
       const { cardId } = action.payload;
       delete state.cards[cardId];
       Object.values(state.lists).forEach((list) => {
         list.cardIds = list.cardIds.filter((id) => id !== cardId);
       });
+      localStorage.setItem("kanban-data", JSON.stringify(state));
     },
-    copyCard: (state, action: PayloadAction<{ cardId: string }>) => {
-      const { cardId } = action.payload;
-      const original = state.cards[cardId];
-      if (!original) return;
 
-      const newCard = { ...original, id: `card-${Date.now()}` };
-      state.cards[newCard.id] = newCard;
-      Object.values(state.lists).forEach((list) => {
-        if (list.cardIds.includes(cardId)) {
-          list.cardIds.push(newCard.id);
-        }
-      });
-    },
     editCard: (
       state,
       action: PayloadAction<{
         cardId: string;
-        content?: string;
         title?: string;
+        content?: string;
         description?: string;
       }>
     ) => {
-      // state.cards[action.payload.cardId].content = action.payload.content;
-      const card = state.cards[action.payload.cardId];
+      const { cardId, title, content, description } = action.payload;
+      const card = state.cards[cardId];
+
       if (card) {
-        if (action.payload.content !== undefined)
-          card.content = action.payload.content;
-        if (action.payload.title !== undefined)
-          card.title = action.payload.title;
-        if (action.payload.description !== undefined)
-          card.description = action.payload.description;
+        state.cards = {
+          ...state.cards,
+          [cardId]: {
+            ...card,
+            title: title ?? card.title,
+            content: content ?? card.content,
+            description: description ?? card.description,
+          },
+        };
       }
+
       localStorage.setItem("kanban-data", JSON.stringify(state));
     },
   },
 });
 
-export const { setData, addCard, editCard, deleteCard, copyCard } =
-  todosSlice.actions;
+export const { setData, addCard, editCard, deleteCard } = todosSlice.actions;
 export default todosSlice.reducer;

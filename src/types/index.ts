@@ -3,6 +3,8 @@ import type {
   DraggableStateSnapshot,
 } from "@hello-pangea/dnd";
 import type { Todo } from "../store/slice/todosSlice";
+import type { CardType } from "../features/KanbanBoard/types";
+import type { Editor } from "@tiptap/react";
 
 export type TodoItemProps = {
   todo: Todo;
@@ -19,3 +21,24 @@ export type EditableTextProps = {
   done: boolean;
   onChange: (text: string) => void;
 };
+
+export interface CreateEditCardProps {
+  listId: string;
+  editingCard: CardType | null;
+  setEditingCard: (card: CardType | null) => void;
+  opened: boolean;
+  setOpened: (value: boolean) => void;
+  isEditMode: boolean;
+  setIsEditMode: (value: boolean) => void;
+  editor: Editor | null;
+}
+
+export interface CardProps {
+  card: CardType;
+  provided: DraggableProvided;
+  isCombining?: boolean;
+  isDragging?: boolean;
+  setEditingCard: (card: CardType | null) => void;
+  setIsEditMode: (value: boolean) => void;
+  setOpened: (value: boolean) => void;
+}

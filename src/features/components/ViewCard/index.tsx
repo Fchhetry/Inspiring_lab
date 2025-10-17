@@ -1,14 +1,31 @@
 import React from "react";
-import { Modal, Title, Text, Button, Group } from "@mantine/core";
+import { Modal, Title, Group, Button } from "@mantine/core";
+import { RichTextEditor } from "@mantine/tiptap";
+import { useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import type { CardType } from "../../KanbanBoard/types";
 
 interface ViewCardProps {
   opened: boolean;
   onClose: () => void;
   card: CardType | null;
+  onEdit: (card: CardType) => void;
+  onDelete: () => void;
 }
 
-const ViewCard: React.FC<ViewCardProps> = ({ opened, onClose, card }) => {
+const ViewCard: React.FC<ViewCardProps> = ({
+  opened,
+  onClose,
+  card,
+  onEdit,
+  onDelete,
+}) => {
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: card?.description || "<p><i>No description</i></p>",
+    editable: false,
+  });
+
   if (!card) return null;
 
   return (
@@ -18,28 +35,22 @@ const ViewCard: React.FC<ViewCardProps> = ({ opened, onClose, card }) => {
       title={<Title order={4}>{card.title || "Card Details"}</Title>}
       centered
       overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
+      withCloseButton
+      size={500}
     >
-      <div style={{ padding: "10px 0" }}>
-        <Text
-          dangerouslySetInnerHTML={{
-            __html: card.description || "<i>No description</i>",
-          }}
-        />
+      <div style={{ marginBottom: 20 }}>
+        {editor && (
+          <RichTextEditor editor={editor} style={{ border: "none" }}>
+            <RichTextEditor.Content />
+          </RichTextEditor>
+        )}
       </div>
 
-      <Group justify="flex-end" mt="md">
-        <Button variant="default" onClick={onClose}>
-          Cancel
+      <Group align="right" gap="sm">
+        <Button color="red" onClick={onDelete}>
+          Delete
         </Button>
-        <Button
-          color="blue"
-          onClick={() => {
-            onClose();
-            window.dispatchEvent(
-              new CustomEvent("open-edit-modal", { detail: card })
-            );
-          }}
-        >
+        <Button color="blue" onClick={() => onEdit(card)}>
           Edit
         </Button>
       </Group>

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DroppableProvided, DraggableProvided } from "@hello-pangea/dnd";
 import type { CardType, ListType } from "../types";
 import KanbanCard from "./Kanbancard";
-import { Paper, Title, Stack } from "@mantine/core";
+import { Paper, Title, Stack, Button } from "@mantine/core";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import EditCard from "../../components/EditCard";
-import AddCard from "../../components/AddCard";
+import CreateEditCard from "../../components/CreateEditCard";
+
 interface ListProps {
   list: ListType;
   cards: Record<string, CardType>;
@@ -21,127 +21,104 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
 
   const editor = useEditor({ extensions: [StarterKit], content: "" });
 
-  const closeModal = () => {
-    setOpened(false);
+  const handleAddNewCard = () => {
     setEditingCard(null);
     setIsEditMode(false);
+    setOpened(true);
   };
 
-  useEffect(() => {
-    const handleOpenEdit = (e: CustomEvent<CardType>) => {
-      const card = e.detail;
-      setIsEditMode(true);
-      setEditingCard(card);
-
-      const trySetEditor = () => {
-        if (editor) {
-          editor.commands.setContent(card.description || "");
-          setOpened(true);
-        } else {
-          setTimeout(trySetEditor, 100);
-        }
-      };
-      trySetEditor();
-    };
-
-    window.addEventListener("open-edit-modal", handleOpenEdit as EventListener);
-    return () =>
-      window.removeEventListener(
-        "open-edit-modal",
-        handleOpenEdit as EventListener
-      );
-  }, [editor]);
-
   return (
-    <>
-      <Paper
-        shadow="md"
-        radius="lg"
-        p="md"
-        withBorder
-        style={{
-          width: 300,
-          backgroundColor: "#bfd9f3ff",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          maxHeight: "80vh",
-        }}
+    <Paper
+      shadow="md"
+      radius="lg"
+      p="md"
+      withBorder
+      style={{
+        width: 300,
+        backgroundColor: "#bfd9f3ff",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        maxHeight: "80vh",
+      }}
+    >
+      <Title
+        order={4}
+        {...(dragHandleProps ?? {})}
+        style={{ marginBottom: 16, textAlign: "center" }}
       >
-        <Title
-          order={4}
-          {...(dragHandleProps ?? {})}
-          style={{ marginBottom: 16, textAlign: "center" }}
-        >
-          {list.title}
-        </Title>
+        {list.title}
+      </Title>
 
-        <Droppable droppableId={list.id} type="card" isCombineEnabled>
-          {(provided: DroppableProvided, snapshot) => (
-            <Stack
-              gap="sm"
-              mt="md"
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              style={{
-                flexGrow: 1,
-                minHeight: 50,
-                background: snapshot.isDraggingOver ? "#f1f3f5" : "transparent",
-                borderRadius: 6,
-                padding: 4,
-                transition: "background 0.2s ease",
-                overflowY: "auto",
-              }}
-            >
-              {list.cardIds.map((cardId, index) => {
-                const card = cards[cardId];
-                if (!card) {
-                  console.warn(
-                    `Card with ID "${cardId}" not found in cards for list "${list.title}"`
-                  );
-                  return null;
-                }
-                return (
-                  <Draggable draggableId={cardId} index={index} key={cardId}>
-                    {(prov: DraggableProvided, cardSnapshot) => (
-                      <div
-                        ref={prov.innerRef}
-                        {...prov.draggableProps}
-                        {...prov.dragHandleProps}
-                      >
-                        <KanbanCard
-                          card={cards[cardId]}
-                          provided={prov}
-                          isCombining={!!cardSnapshot.combineTargetFor}
-                          isDragging={cardSnapshot.isDragging}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                );
-              })}
-              {provided.placeholder}
-            </Stack>
-          )}
-        </Droppable>
+      <Droppable droppableId={list.id} type="card" isCombineEnabled>
+        {(provided: DroppableProvided, snapshot) => (
+          <Stack
+            gap="sm"
+            mt="md"
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            style={{
+              flexGrow: 1,
+              minHeight: 50,
+              background: snapshot.isDraggingOver ? "#f1f3f5" : "transparent",
+              borderRadius: 6,
+              padding: 4,
+              transition: "background 0.2s ease",
+              overflowY: "auto",
+            }}
+          >
+            {list.cardIds.map((cardId, index) => {
+              const card = cards[cardId];
+              if (!card) return null;
+              return (
+                <Draggable draggableId={cardId} index={index} key={cardId}>
+                  {(prov: DraggableProvided, cardSnapshot) => (
+                    <div
+                      ref={prov.innerRef}
+                      {...prov.draggableProps}
+                      {...prov.dragHandleProps}
+                    >
+                      <KanbanCard
+                        card={card}
+                        provided={prov}
+                        isCombining={!!cardSnapshot.combineTargetFor}
+                        isDragging={cardSnapshot.isDragging}
+                        setEditingCard={setEditingCard}
+                        setIsEditMode={setIsEditMode}
+                        setOpened={setOpened}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              );
+            })}
+            {provided.placeholder}
+          </Stack>
+        )}
+      </Droppable>
 
-        <AddCard
-          opened={opened}
-          setOpened={setOpened}
-          editor={editor}
-          setIsEditMode={setIsEditMode}
-          setEditingCard={setEditingCard}
-        />
-      </Paper>
+      <Button
+        fullWidth
+        mt="sm"
+        variant="light"
+        color="gray"
+        radius="sm"
+        onClick={handleAddNewCard}
+      >
+        + Add a card
+      </Button>
 
-      <EditCard
-        opened={opened}
-        onClose={closeModal}
-        isEditMode={isEditMode}
+      <CreateEditCard
         listId={list.id}
         editingCard={editingCard}
+        setEditingCard={setEditingCard}
+        opened={opened}
+        setOpened={setOpened}
+        isEditMode={isEditMode}
+        setIsEditMode={setIsEditMode}
+        editor={editor}
       />
-    </>
+    </Paper>
   );
 };
 

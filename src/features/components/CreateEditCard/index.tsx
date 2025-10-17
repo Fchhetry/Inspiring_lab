@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Title,
@@ -10,54 +10,55 @@ import {
 } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { RichTextEditor } from "@mantine/tiptap";
-import { useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import type { Editor } from "@tiptap/react";
 import type { CardType } from "../../KanbanBoard/types";
 import { useDispatch } from "react-redux";
-import { addCard, editCard } from "../../../store/slice/todosSlice";
+import { addCard, editCard, deleteCard } from "../../../store/slice/todosSlice";
 
 interface CreateEditCardProps {
   listId: string;
   editingCard: CardType | null;
   setEditingCard: (card: CardType | null) => void;
+  opened: boolean;
+  setOpened: (value: boolean) => void;
+  isEditMode: boolean;
+  setIsEditMode: (value: boolean) => void;
+  editor: Editor | null;
 }
 
 const CreateEditCard: React.FC<CreateEditCardProps> = ({
   listId,
   editingCard,
   setEditingCard,
+  opened,
+  setOpened,
+  isEditMode,
+  setIsEditMode,
+  editor,
 }) => {
   const dispatch = useDispatch();
-
-  const [opened, setOpened] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [title, setTitle] = useState("");
-
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: "",
-  });
 
   useEffect(() => {
     if (!editor) return;
 
     if (editingCard) {
       setIsEditMode(true);
-      setOpened(true);
       setTitle(editingCard.title || "");
       editor.commands.setContent(editingCard.description || "");
-    } else {
-      setIsEditMode(false);
-      editor.commands.clearContent();
+      if (!opened) setOpened(true);
     }
   }, [editingCard, editor]);
 
   const handleCancel = () => {
-    setTitle("");
-    editor?.commands.clearContent();
     setOpened(false);
-    setEditingCard(null);
-    setIsEditMode(false);
+
+    setTimeout(() => {
+      setTitle("");
+      editor?.commands.clearContent();
+      setEditingCard(null);
+      setIsEditMode(false);
+    }, 200);
   };
 
   const handleSave = () => {
@@ -71,16 +72,16 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
       dispatch(
         editCard({
           cardId: editingCard.id,
-          content: trimmedTitle,
           title: trimmedTitle,
+          content: trimmedTitle,
           description: descriptionHTML,
         })
       );
     } else {
       const newCard: CardType = {
         id: `card-${Date.now()}`,
-        content: trimmedTitle,
         title: trimmedTitle,
+        content: trimmedTitle,
         description: descriptionHTML,
       };
       dispatch(addCard({ listId, card: newCard }));
@@ -89,116 +90,104 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
     handleCancel();
   };
 
+  const handleDelete = () => {
+    if (editingCard) {
+      dispatch(deleteCard({ cardId: editingCard.id }));
+      handleCancel();
+    }
+  };
+
   return (
-    <>
-      {!opened && (
-        <Button
-          fullWidth
-          mt="sm"
-          variant="light"
+    <Modal
+      opened={opened}
+      onClose={handleCancel}
+      withCloseButton={false}
+      centered
+      overlayProps={{ backgroundOpacity: 0.25, blur: 2 }}
+      styles={{
+        content: {
+          width: "100%",
+          maxWidth: 500,
+          padding: 20,
+          borderRadius: 8,
+        },
+      }}
+    >
+      <Group align="apart" mb="md">
+        <Title order={3}>{isEditMode ? "Edit Card" : "Add New Card"}</Title>
+
+        <ActionIcon
+          variant="subtle"
           color="gray"
-          radius="sm"
-          onClick={() => {
-            setEditingCard(null);
-            setIsEditMode(false);
-            setOpened(true);
-            editor?.commands.clearContent();
-          }}
-          style={{ minHeight: 36 }}
+          onClick={handleCancel}
+          size="lg"
+          radius="xl"
         >
-          + Add a card
-        </Button>
-      )}
+          <IconX size={20} stroke={2} />
+        </ActionIcon>
+      </Group>
 
-      <Modal
-        opened={opened}
-        onClose={handleCancel}
-        withCloseButton={false}
-        centered
-        withinPortal
-        keepMounted
-        transitionProps={{ transition: "fade", duration: 150 }}
-        overlayProps={{ backgroundOpacity: 0.25, blur: 2 }}
-        styles={{
-          content: {
-            position: "relative",
-            width: "100%",
-            backgroundColor: "#f8f9fa",
-            border: "1px solid #dee2e6",
-            borderRadius: 8,
-            padding: 20,
-            boxShadow: "none",
-          },
-        }}
-      >
-        <Group justify="space-between" align="center" mb="md">
-          <Title order={3} fw={600}>
-            {isEditMode ? "Edit Card" : "Add New Card"}
-          </Title>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            onClick={handleCancel}
-            size="lg"
-            radius="xl"
-          >
-            <IconX size={20} stroke={2} />
-          </ActionIcon>
-        </Group>
-
-        <Stack gap="sm">
-          <TextInput
-            label="Title *"
-            placeholder="Enter card title"
-            value={title}
-            onChange={(e) => {
-              if (e.currentTarget.value.length <= 50) {
-                setTitle(e.currentTarget.value);
-              }
+      <Stack gap="sm">
+        <TextInput
+          label="Title"
+          placeholder="Enter card title"
+          value={title}
+          onChange={(e) => setTitle(e.currentTarget.value)}
+          required
+        />
+        <div>
+          <label
+            style={{
+              display: "block",
+              fontWeight: 500,
+              marginBottom: 6,
+              fontSize: 14,
+              color: "#212529",
             }}
-            required
-            maxLength={50}
-            description={`${title.length}/50 characters`}
-          />
+          >
+            Description
+          </label>
 
-          <div>
-            <Title order={6} mb={4}>
-              Description
-            </Title>
-            <div
-              style={{
-                border: "1px solid #dee2e6",
-                borderRadius: 8,
-                overflow: "hidden",
-                backgroundColor: "white",
-              }}
-            >
-              <RichTextEditor editor={editor} style={{ minHeight: 150 }}>
-                <RichTextEditor.Toolbar sticky stickyOffset={0}>
-                  <RichTextEditor.ControlsGroup>
-                    <RichTextEditor.Bold />
-                    <RichTextEditor.Italic />
-                    <RichTextEditor.Underline />
-                    <RichTextEditor.BulletList />
-                    <RichTextEditor.OrderedList />
-                  </RichTextEditor.ControlsGroup>
-                </RichTextEditor.Toolbar>
-                <RichTextEditor.Content />
-              </RichTextEditor>
-            </div>
+          <div
+            style={{
+              border: "1px solid #dee2e6",
+              borderRadius: 8,
+              overflow: "hidden",
+            }}
+          >
+            <RichTextEditor editor={editor} style={{ minHeight: 150 }}>
+              <RichTextEditor.Toolbar sticky>
+                <RichTextEditor.ControlsGroup>
+                  <RichTextEditor.Bold />
+                  <RichTextEditor.Italic />
+                  <RichTextEditor.Underline />
+                  <RichTextEditor.BulletList />
+                  <RichTextEditor.OrderedList />
+                </RichTextEditor.ControlsGroup>
+              </RichTextEditor.Toolbar>
+              <RichTextEditor.Content />
+            </RichTextEditor>
           </div>
+          <p style={{ fontSize: 12, color: "#868e96", marginTop: 4 }}>
+            Write a short description about the task.
+          </p>
+        </div>
 
-          <Group justify="flex-end" mt="md">
-            <Button variant="default" onClick={handleCancel}>
-              Cancel
+        <Group align="right" mt="md" gap="sm">
+          {isEditMode && (
+            <Button color="red" onClick={handleDelete}>
+              Delete
             </Button>
-            <Button color="blue" onClick={handleSave}>
-              Save
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
-    </>
+          )}
+          <Button variant="default" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button color="blue" onClick={handleSave}>
+            {isEditMode ? "Update" : "Save"}
+          </Button>
+        </Group>
+      </Stack>
+    </Modal>
   );
 };
 
