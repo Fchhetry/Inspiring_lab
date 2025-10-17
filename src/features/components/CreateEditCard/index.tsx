@@ -122,6 +122,10 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
           onClick={handleCancel}
           size="lg"
           radius="xl"
+          style={{
+            position: "absolute",
+            right: "25px",
+          }}
         >
           <IconX size={20} stroke={2} />
         </ActionIcon>
