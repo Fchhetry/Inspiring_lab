@@ -1,9 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
-import { TextInput, ActionIcon, Tooltip } from "@mantine/core";
+import {
+  TextInput,
+  ActionIcon,
+  Tooltip,
+  Modal,
+  Button,
+  Textarea,
+  Stack,
+} from "@mantine/core";
 import { IconGripVertical, IconTrash } from "@tabler/icons-react";
 import { Menu, Item, useContextMenu } from "react-contexify";
 import "react-contexify/ReactContexify.css";
-import type { TodoItemProps, EditableTextProps } from "../../../../types";
+import { useDispatch } from "react-redux";
+import { editCard, deleteCard } from "../../../../store/slice/todosSlice";
+import type { TodoItemProps, EditableTextProps, Todo } from "../../../../types";
 
 const MENU_ID = "TODO_CONTEXT_MENU";
 
@@ -80,13 +90,45 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onTextChange,
   onDelete,
 }) => {
+  const dispatch = useDispatch();
   const [hovered, setHovered] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
   const { show } = useContextMenu({ id: MENU_ID });
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
     show({ event, props: { todo } });
+  };
+
+  const handleTextChange = (newValue: string) => {
+    onTextChange?.(newValue);
+    dispatch(editCard({ cardId: todo.id, title: newValue, content: newValue }));
+  };
+
+  const handleDelete = (id: string | number) => {
+    onDelete?.(id);
+    dispatch(deleteCard({ cardId: String(id) }));
+  };
+
+  const handleEditOpen = (t: Todo) => {
+    setEditTitle(t.text);
+    setEditDescription(t.description ?? "");
+    setEditModalOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    dispatch(
+      editCard({
+        cardId: todo.id,
+        title: editTitle,
+        content: editTitle,
+        description: editDescription,
+      })
+    );
+    setEditModalOpen(false);
   };
 
   return (
@@ -115,7 +157,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
         <EditableText
           value={todo.text}
           done={todo.done ?? false}
-          onChange={onTextChange}
+          onChange={handleTextChange}
           focus={editing}
         />
 
@@ -131,7 +173,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
           <ActionIcon
             color="red"
             variant="subtle"
-            onClick={() => onDelete?.(todo.id)}
+            onClick={() => handleDelete(todo.id)}
             title="Delete todo"
           >
             <IconTrash size={18} />
@@ -140,9 +182,34 @@ const TodoItem: React.FC<TodoItemProps> = ({
       </div>
 
       <Menu id={MENU_ID}>
-        <Item onClick={() => setEditing(true)}>Edit</Item>
-        <Item onClick={({ props }) => onDelete?.(props.todo.id)}> Delete</Item>
+        <Item onClick={({ props }) => handleEditOpen(props.todo)}>Edit</Item>
+        <Item onClick={({ props }) => handleDelete(props.todo.id)}>Delete</Item>
       </Menu>
+
+      <Modal
+        opened={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        title="Edit Todo"
+        centered
+        zIndex={2000}
+      >
+        <Stack>
+          <TextInput
+            label="Title"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.currentTarget.value)}
+          />
+          <Textarea
+            label="Description"
+            minRows={3}
+            value={editDescription}
+            onChange={(e) => setEditDescription(e.currentTarget.value)}
+          />
+          <Button onClick={handleSaveEdit} color="blue" mt="sm">
+            update
+          </Button>
+        </Stack>
+      </Modal>
     </>
   );
 };
