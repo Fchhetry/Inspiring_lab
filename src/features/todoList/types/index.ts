@@ -6,6 +6,7 @@ import type { Todo } from "../../../types";
 
 export type TodoItemProps = {
   todo: Todo;
+  
   provided: DraggableProvided;
   snapshot: DraggableStateSnapshot;
   onTextChange: (text: string) => void;

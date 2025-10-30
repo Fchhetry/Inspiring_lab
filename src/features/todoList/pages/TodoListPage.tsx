@@ -136,7 +136,7 @@ const TodoList: React.FC = () => {
                 style={{
                   maxHeight: "400px",
                   overflowY: "auto",
-                  paddingRight: "4",
+                  paddingRight: 4,
                 }}
               >
                 <DragDropContext onDragEnd={handleDragEnd}>
@@ -162,6 +162,7 @@ const TodoList: React.FC = () => {
                                   handleTextChange(todo.id, text)
                                 }
                                 onDelete={() => handleDeleteTodo(todo.id)}
+                                editor={null}
                               />
                             )}
                           </Draggable>
