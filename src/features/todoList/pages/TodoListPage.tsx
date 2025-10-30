@@ -17,16 +17,20 @@ import type { RootState } from "../../../store/Store";
 import { setData, addCard, editCard } from "../../../store/slice/todosSlice";
 import type { CardType } from "../../KanbanBoard/types";
 import TodoItem from "../components/TodoItem/Index";
+import CreateEditCard from "../../components/CreateEditCard";
 
 const TodoList: React.FC = () => {
   const kanbanData = useSelector((state: RootState) => state.kanban);
   const dispatch = useDispatch();
   const [newTodo, setNewTodo] = useState("");
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingCard, setEditingCard] = useState<any>(null);
 
   const todos =
     kanbanData.lists?.["todo-list"]?.cardIds?.map((id) => ({
       id,
       text: kanbanData.cards[id]?.content || "",
+      description: kanbanData.cards[id]?.description || "",
       done: false,
     })) || [];
 
@@ -87,6 +91,27 @@ const TodoList: React.FC = () => {
     );
   };
 
+  const handleEditOpen = (todo: any) => {
+    setEditingCard({
+      id: todo.id,
+      title: todo.text,
+      content: todo.text,
+      description: todo.description || "",
+    });
+    setEditModalOpen(true);
+  };
+
+  // const handleEditSubmit = (updated: any) => {
+  //   dispatch(
+  //     editCard({
+  //       cardId: updated.id,
+  //       content: updated.title || updated.content,
+  //       description: updated.description || "",
+  //     })
+  //   );
+  //   setEditModalOpen(false);
+  // };
+
   return (
     <>
       <Container size="md">
@@ -99,7 +124,7 @@ const TodoList: React.FC = () => {
       </Container>
 
       <Affix bottom={20} right={20}>
-        <Menu shadow="md" width={400} position="top-end">
+        <Menu shadow="md" width={400} position="top-end" keepMounted>
           <Menu.Target>
             <ActionIcon
               size="xl"
@@ -132,6 +157,7 @@ const TodoList: React.FC = () => {
                   Add
                 </Button>
               </Group>
+
               <div
                 style={{
                   maxHeight: "400px",
@@ -162,7 +188,7 @@ const TodoList: React.FC = () => {
                                   handleTextChange(todo.id, text)
                                 }
                                 onDelete={() => handleDeleteTodo(todo.id)}
-                                editor={null}
+                                onEditClick={() => handleEditOpen(todo)}
                               />
                             )}
                           </Draggable>
@@ -177,6 +203,21 @@ const TodoList: React.FC = () => {
           </Menu.Dropdown>
         </Menu>
       </Affix>
+
+   {editModalOpen && editingCard && (
+  <CreateEditCard
+    listId="todo-list"
+    editingCard={editingCard}
+    setEditingCard={setEditingCard}
+    opened={editModalOpen}
+    setOpened={setEditModalOpen}
+    isEditMode={true}
+    setIsEditMode={() => {}}
+ 
+  />
+)}
+
+
     </>
   );
 };

@@ -10,10 +10,11 @@ import {
 } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { RichTextEditor } from "@mantine/tiptap";
-import type { Editor } from "@tiptap/react";
-import type { CardType } from "../../KanbanBoard/types";
+import { useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import { useDispatch } from "react-redux";
 import { addCard, editCard, deleteCard } from "../../../store/slice/todosSlice";
+import type { CardType } from "../../KanbanBoard/types";
 
 interface CreateEditCardProps {
   listId: string;
@@ -23,7 +24,6 @@ interface CreateEditCardProps {
   setOpened: (value: boolean) => void;
   isEditMode: boolean;
   setIsEditMode: (value: boolean) => void;
-  editor: Editor | null;
 }
 
 const CreateEditCard: React.FC<CreateEditCardProps> = ({
@@ -34,15 +34,17 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
   setOpened,
   isEditMode,
   setIsEditMode,
-  editor,
 }) => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
 
-  useEffect(() => {
-    if (!editor) return;
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: "",
+  });
 
-    if (editingCard) {
+  useEffect(() => {
+    if (editingCard && editor) {
       setIsEditMode(true);
       setTitle(editingCard.title || "");
       editor.commands.setContent(editingCard.description || "");
@@ -52,7 +54,6 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
 
   const handleCancel = () => {
     setOpened(false);
-
     setTimeout(() => {
       setTitle("");
       editor?.commands.clearContent();
@@ -115,7 +116,6 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
     >
       <Group align="apart" mb="md">
         <Title order={3}>{isEditMode ? "Edit Card" : "Add New Card"}</Title>
-
         <ActionIcon
           variant="subtle"
           color="gray"
@@ -135,6 +135,7 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
           onChange={(e) => setTitle(e.currentTarget.value)}
           required
         />
+
         <div>
           <label
             style={{

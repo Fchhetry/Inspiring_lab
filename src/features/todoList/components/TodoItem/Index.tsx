@@ -1,16 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { ActionIcon, Tooltip, TextInput } from "@mantine/core";
 import { IconGripVertical, IconTrash } from "@tabler/icons-react";
 import { Menu, Item, useContextMenu } from "react-contexify";
-import "react-contexify/ReactContexify.css";
+import "react-contexify/dist/ReactContexify.css";
 import { useDispatch } from "react-redux";
 import { editCard, deleteCard } from "../../../../store/slice/todosSlice";
 import type { TodoItemProps, EditableTextProps } from "../../../../types";
-import CreateEditCard from "../../../components/CreateEditCard";
-import type { Editor } from "@tiptap/react";
 import type { ItemParams } from "react-contexify";
-
-const MENU_ID = "TODO_CONTEXT_MENU";
 
 const DragHandle: React.FC<{ dragHandleProps: any }> = ({
   dragHandleProps,
@@ -78,22 +74,15 @@ const EditableText: React.FC<EditableTextProps & { focus?: boolean }> = ({
   );
 };
 
-const TodoItem: React.FC<TodoItemProps & { editor: Editor | null }> = ({
-  todo,
-  provided,
-  snapshot,
-  onTextChange,
-  onDelete,
-  editor,
-}) => {
+const TodoItem: React.FC<
+  TodoItemProps & {
+    onEditClick: (todo: any) => void;
+  }
+> = ({ todo, provided, snapshot, onTextChange, onDelete, onEditClick }) => {
   const dispatch = useDispatch();
   const [hovered, setHovered] = useState(false);
-  const [editing] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
 
-  const [editTitle, setEditTitle] = useState("");
-  const [editDescription, setEditDescription] = useState("");
-
+  const MENU_ID = useMemo(() => `TODO_CONTEXT_MENU_${todo.id}`, [todo.id]);
   const { show, hideAll } = useContextMenu({ id: MENU_ID });
 
   const handleContextMenu = (event: React.MouseEvent) => {
@@ -108,19 +97,16 @@ const TodoItem: React.FC<TodoItemProps & { editor: Editor | null }> = ({
   };
 
   const handleDelete = (id: string | number) => {
+    hideAll();
     onDelete?.(id);
     dispatch(deleteCard({ cardId: String(id) }));
   };
 
- 
   const handleEditOpen = (params: ItemParams) => {
     params.event?.stopPropagation();
     params.event?.preventDefault();
-
     hideAll();
-    setEditTitle(todo.text);
-    setEditDescription(todo.description ?? "");
-    setEditModalOpen(true);
+    onEditClick(todo);
   };
 
   return (
@@ -149,8 +135,7 @@ const TodoItem: React.FC<TodoItemProps & { editor: Editor | null }> = ({
         <EditableText
           value={todo.text}
           done={todo.done ?? false}
-          onChange={editModalOpen ? () => {} : handleTextChange}
-          focus={editing}
+          onChange={handleTextChange}
         />
 
         <div
@@ -162,14 +147,15 @@ const TodoItem: React.FC<TodoItemProps & { editor: Editor | null }> = ({
             transition: "opacity 0.2s ease",
           }}
         >
-          <ActionIcon
-            color="red"
-            variant="subtle"
-            onClick={() => handleDelete(todo.id)}
-            title="Delete todo"
-          >
-            <IconTrash size={18} />
-          </ActionIcon>
+          <Tooltip label="Delete" position="top" withArrow>
+            <ActionIcon
+              color="red"
+              variant="subtle"
+              onClick={() => handleDelete(todo.id)}
+            >
+              <IconTrash size={18} />
+            </ActionIcon>
+          </Tooltip>
         </div>
       </div>
 
@@ -177,24 +163,6 @@ const TodoItem: React.FC<TodoItemProps & { editor: Editor | null }> = ({
         <Item onClick={handleEditOpen}>Edit</Item>
         <Item onClick={() => handleDelete(todo.id)}>Delete</Item>
       </Menu>
-
-      {editModalOpen && (
-        <CreateEditCard
-          listId=""
-          editingCard={{
-            id: todo.id,
-            title: editTitle,
-            content: editTitle,
-            description: editDescription,
-          }}
-          setEditingCard={() => setEditModalOpen(false)}
-          opened={editModalOpen}
-          setOpened={setEditModalOpen}
-          isEditMode={true}
-          setIsEditMode={() => {}}
-          editor={editor}
-        />
-      )}
     </>
   );
 };
