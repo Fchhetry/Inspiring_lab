@@ -19,7 +19,7 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingCard, setEditingCard] = useState<CardType | null>(null);
 
-  const editor = useEditor({ extensions: [StarterKit], content: "" });
+ // const editor = useEditor({ extensions: [StarterKit], content: "" });
 
   const handleAddNewCard = () => {
     setEditingCard(null);
@@ -116,7 +116,7 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
         setOpened={setOpened}
         isEditMode={isEditMode}
         setIsEditMode={setIsEditMode}
-        editor={editor}
+       // editor={editor}
       />
     </Paper>
   );

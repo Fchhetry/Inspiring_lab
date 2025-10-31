@@ -34,6 +34,7 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
   setOpened,
   isEditMode,
   setIsEditMode,
+  
 }) => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
