@@ -4,8 +4,7 @@ import type { DroppableProvided, DraggableProvided } from "@hello-pangea/dnd";
 import type { CardType, ListType } from "../types";
 import KanbanCard from "./Kanbancard";
 import { Paper, Title, Stack, Button } from "@mantine/core";
-import { useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+
 import CreateEditCard from "../../components/CreateEditCard";
 
 interface ListProps {
@@ -18,8 +17,6 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
   const [opened, setOpened] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingCard, setEditingCard] = useState<CardType | null>(null);
-
- // const editor = useEditor({ extensions: [StarterKit], content: "" });
 
   const handleAddNewCard = () => {
     setEditingCard(null);
@@ -116,7 +113,7 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
         setOpened={setOpened}
         isEditMode={isEditMode}
         setIsEditMode={setIsEditMode}
-       // editor={editor}
+        // editor={editor}
       />
     </Paper>
   );
