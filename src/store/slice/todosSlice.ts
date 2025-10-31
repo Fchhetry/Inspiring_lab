@@ -52,14 +52,16 @@ const updateTodosFromCards = (cards: Record<string, CardType>) => {
   }));
   localStorage.setItem("todos", JSON.stringify(todos));
 };
+
 const todosSlice = createSlice({
   name: "kanban",
   initialState,
   reducers: {
     setData: (state, action: PayloadAction<KanbanData>) => {
-      localStorage.setItem("kanban-data", JSON.stringify(action.payload));
-      updateTodosFromCards(action.payload.cards);
-      return action.payload;
+      const newState = action.payload;
+      localStorage.setItem("kanban-data", JSON.stringify(newState));
+      updateTodosFromCards(newState.cards);
+      return newState;
     },
     addCard: (
       state,
@@ -100,19 +102,11 @@ const todosSlice = createSlice({
     ) => {
       const { cardId, title, content, description } = action.payload;
       const card = state.cards[cardId];
-
       if (card) {
-        state.cards = {
-          ...state.cards,
-          [cardId]: {
-            ...card,
-            title: title ?? card.title,
-            content: content ?? card.content,
-            description: description ?? card.description,
-          },
-        };
+        if (title !== undefined) card.title = title;
+        if (content !== undefined) card.content = content;
+        if (description !== undefined) card.description = description;
       }
-
       localStorage.setItem("kanban-data", JSON.stringify(state));
       updateTodosFromCards(state.cards);
     },

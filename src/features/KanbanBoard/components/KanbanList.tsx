@@ -105,7 +105,7 @@ const KanbanList: React.FC<ListProps> = ({ list, cards, dragHandleProps }) => {
         radius="sm"
         onClick={handleAddNewCard}
       >
-        + Add a card
+        + Add new task
       </Button>
 
       <CreateEditCard

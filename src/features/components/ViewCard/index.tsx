@@ -4,11 +4,11 @@ import { RichTextEditor } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import type { CardType } from "../../KanbanBoard/types";
+import { useEffect } from "react";
 
 interface ViewCardProps {
   opened: boolean;
   onClose: () => void;
-  // card: CardType | null;
   card: CardType;
   onEdit: (card: CardType) => void;
   onDelete: () => void;
@@ -26,6 +26,11 @@ const ViewCard: React.FC<ViewCardProps> = ({
     content: card?.description || "<p><i>No description</i></p>",
     editable: false,
   });
+  useEffect(() => {
+    if (editor && card?.description) {
+      editor.commands.setContent(card.description);
+    }
+  }, [card?.description, editor]);
 
   if (!card) return null;
 

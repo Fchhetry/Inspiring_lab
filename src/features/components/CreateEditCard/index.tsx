@@ -116,13 +116,19 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
       }}
     >
       <Group align="apart" mb="md">
-        <Title order={3}>{isEditMode ? "Edit Card" : "Add New Card"}</Title>
+        <Title order={3}>
+          {isEditMode ? "Edit Task Details" : "Add New Task"}
+        </Title>
         <ActionIcon
           variant="subtle"
           color="gray"
           onClick={handleCancel}
           size="lg"
           radius="xl"
+          style={{
+            position: "absolute",
+            right: "25px",
+          }}
         >
           <IconX size={20} stroke={2} />
         </ActionIcon>
@@ -131,7 +137,7 @@ const CreateEditCard: React.FC<CreateEditCardProps> = ({
       <Stack gap="sm">
         <TextInput
           label="Title"
-          placeholder="Enter card title"
+          placeholder="Enter task title"
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
           required
